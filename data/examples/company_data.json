@@ -1,0 +1,34 @@
+{
+  "example_companies": [
+    {
+      "company_name": "TechStartup Inc",
+      "data_collected": ["email", "name", "location", "usage_data"],
+      "data_storage_location": "US",
+      "ai_models_used": ["recommendation_engine", "fraud_detection"],
+      "user_count": 50000,
+      "revenue": 5000000,
+      "processing_purposes": ["personalization", "analytics", "security"],
+      "industry": "Technology"
+    },
+    {
+      "company_name": "HealthCare Plus",
+      "data_collected": ["medical_records", "insurance_info", "contact_details"],
+      "data_storage_location": "EU",
+      "ai_models_used": ["diagnostic_assistance", "patient_monitoring"],
+      "user_count": 100000,
+      "revenue": 20000000,
+      "processing_purposes": ["treatment", "billing", "research"],
+      "industry": "Healthcare"
+    },
+    {
+      "company_name": "Global Retail Corp",
+      "data_collected": ["purchase_history", "payment_info", "shipping_address"],
+      "data_storage_location": "Global",
+      "ai_models_used": ["inventory_prediction", "customer_segmentation"],
+      "user_count": 1000000,
+      "revenue": 100000000,
+      "processing_purposes": ["order_fulfillment", "marketing", "customer_support"],
+      "industry": "Retail"
+    }
+  ]
+}
