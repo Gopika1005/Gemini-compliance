@@ -1,10 +1,11 @@
 """Unit tests for the compliance analysis pipeline."""
 
 import asyncio
-from src.compliance_monitor import ComplianceMonitor
-from src.regulation_parser import RegulationParser
+
 from src.audit_system import SystemAuditor
+from src.compliance_monitor import ComplianceMonitor
 from src.fix_suggester import FixSuggester
+from src.regulation_parser import RegulationParser
 
 
 def test_compliance_monitor_pipeline():
@@ -20,7 +21,7 @@ def test_compliance_monitor_pipeline():
         "ai_models_used": [],
         "user_count": 1000,
         "revenue": 100000,
-        "processing_purposes": ["service"]
+        "processing_purposes": ["service"],
     }
 
     result = asyncio.run(monitor.analyze_compliance(company_data, ["GDPR", "CCPA"]))

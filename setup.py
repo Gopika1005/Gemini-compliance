@@ -5,9 +5,10 @@ Run: python setup.py
 """
 
 import os
-import sys
-import subprocess
 import platform
+import subprocess
+import sys
+
 
 def print_banner():
     banner = """
@@ -18,41 +19,48 @@ def print_banner():
     """
     print(banner)
 
+
 def check_python_version():
     """Check Python version"""
     print("🔍 Checking Python version...")
     if sys.version_info < (3, 9):
         print("❌ Python 3.9 or higher is required")
         sys.exit(1)
-    print(f"✅ Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}")
+    print(
+        f"✅ Python {sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    )
+
 
 def create_virtual_env():
     """Create virtual environment"""
     print("\n📁 Creating virtual environment...")
-    
+
     if not os.path.exists("venv"):
         subprocess.run([sys.executable, "-m", "venv", "venv"], check=True)
         print("✅ Virtual environment created")
     else:
         print("✅ Virtual environment already exists")
 
+
 def install_dependencies():
     """Install required packages"""
     print("\n📦 Installing dependencies...")
-    
+
     # Get pip path based on OS
     if platform.system() == "Windows":
         pip_path = os.path.join("venv", "Scripts", "pip")
     else:
         pip_path = os.path.join("venv", "bin", "pip")
-    
+
     # Install from requirements.txt
     try:
         subprocess.run([pip_path, "install", "-r", "requirements.txt"], check=True)
         print("✅ Dependencies installed successfully")
     except subprocess.CalledProcessError:
-        print("⚠️ Could not install from requirements.txt, trying individual packages...")
-        
+        print(
+            "⚠️ Could not install from requirements.txt, trying individual packages..."
+        )
+
         packages = [
             "fastapi==0.104.1",
             "uvicorn==0.24.0",
@@ -62,17 +70,18 @@ def install_dependencies():
             "pandas==2.1.3",
             "requests==2.31.0",
             "python-dotenv==1.0.0",
-            "sqlalchemy==2.0.23"
+            "sqlalchemy==2.0.23",
         ]
-        
+
         for package in packages:
             print(f"Installing {package}...")
             subprocess.run([pip_path, "install", package])
 
+
 def setup_environment():
     """Setup environment files"""
     print("\n⚙️ Setting up environment...")
-    
+
     # Create .env file if it doesn't exist
     if not os.path.exists(".env"):
         with open(".env.example", "r") as f:
@@ -83,10 +92,11 @@ def setup_environment():
     else:
         print("✅ .env file already exists")
 
+
 def create_directories():
     """Create necessary directories"""
     print("\n📂 Creating directory structure...")
-    
+
     directories = [
         "data/regulations",
         "data/examples",
@@ -94,17 +104,18 @@ def create_directories():
         "static/css",
         "static/images",
         "templates",
-        "tests"
+        "tests",
     ]
-    
+
     for directory in directories:
         os.makedirs(directory, exist_ok=True)
         print(f"  Created: {directory}")
 
+
 def create_sample_data():
     """Create sample data files"""
     print("\n📊 Creating sample data...")
-    
+
     # Sample regulation data
     sample_regulations = {
         "GDPR": {
@@ -114,9 +125,9 @@ def create_sample_data():
                 "Data minimization",
                 "Purpose limitation",
                 "Right to erasure",
-                "Data protection by design"
+                "Data protection by design",
             ],
-            "max_fine_percentage": 0.04
+            "max_fine_percentage": 0.04,
         },
         "CCPA": {
             "name": "California Consumer Privacy Act",
@@ -125,18 +136,20 @@ def create_sample_data():
                 "Right to know",
                 "Right to delete",
                 "Right to opt-out",
-                "Non-discrimination"
+                "Non-discrimination",
             ],
-            "max_fine_percentage": 0.025
-        }
+            "max_fine_percentage": 0.025,
+        },
     }
-    
+
     for reg_name, reg_data in sample_regulations.items():
         import json
+
         with open(f"data/regulations/{reg_name.lower()}.json", "w") as f:
             json.dump(reg_data, f, indent=2)
-    
+
     print("✅ Sample data created")
+
 
 def print_next_steps():
     """Print next steps for the user"""
@@ -182,6 +195,7 @@ def print_next_steps():
     """
     print(next_steps)
 
+
 def main():
     """Main setup function"""
     print_banner()
@@ -192,6 +206,7 @@ def main():
     create_directories()
     create_sample_data()
     print_next_steps()
+
 
 if __name__ == "__main__":
     main()
