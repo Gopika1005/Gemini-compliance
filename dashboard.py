@@ -36,6 +36,17 @@ except ImportError:
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+# Load API Key for Embedded/Agent services
+api_key = None
+try:
+    if "GEMINI_API_KEY" in st.secrets:
+        api_key = st.secrets["GEMINI_API_KEY"]
+except:
+    pass
+
+if not api_key:
+    api_key = os.getenv("GEMINI_API_KEY")
+
 # Page configuration
 st.set_page_config(
     page_title="Gemini Compliance Dashboard",
@@ -393,17 +404,7 @@ with st.sidebar:
     def get_embedded_system():
         """Initialize the compliance system for embedded use"""
         try:
-            # Try Streamlit Secrets first, then ENV
-            api_key = None
-            try:
-                if "GEMINI_API_KEY" in st.secrets:
-                    api_key = st.secrets["GEMINI_API_KEY"]
-            except:
-                pass
-
-            if not api_key:
-                api_key = os.getenv("GEMINI_API_KEY")
-
+            # Use global api_key
             if not api_key:
                 return None
 
