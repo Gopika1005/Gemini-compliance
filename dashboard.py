@@ -102,16 +102,47 @@ st.markdown(
     }
 
     /* Glassmorphism Cards/Expanders */
-    div[data-testid="stExpander"] {
+    div[data-testid="stExpander"], 
+    .compliance-card, 
+    .metric-card {
         background-color: rgba(30, 41, 59, 0.6) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
+        padding: 1.5rem !important;
+        margin-bottom: 1rem !important;
+        color: white !important;
+    }
+
+    .compliance-card h2, .metric-card h3 {
+        color: #38bdf8 !important;
+        margin-top: 0 !important;
     }
 
     .streamlit-expanderHeader {
         background-color: transparent !important;
         color: #38bdf8 !important;
         font-weight: 700 !important;
+    }
+
+    /* Link Buttons in Sidebar */
+    [data-testid="stSidebar"] a {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+        color: #38bdf8 !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 10px !important;
+        transition: all 0.3s ease !important;
+        text-decoration: none !important;
+        display: block !important;
+        padding: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+        text-align: center !important;
+        font-weight: 600 !important;
+    }
+
+    [data-testid="stSidebar"] a:hover {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
+        transform: translateY(-2px) !important;
     }
 
     /* Cyber-Polished Buttons */
@@ -500,87 +531,8 @@ def get_demo_results(company_data, regulations):
     }
 
 
-# Custom CSS
-st.markdown(
-    """
-<style>
-    .main-header {
-        font-size: 2.8rem;
-        background: linear-gradient(90deg, #1a73e8, #34a853);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 1rem;
-        font-weight: 800;
-    }
-    .compliance-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        color: white;
-        margin-bottom: 1rem;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .metric-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        border-left: 5px solid #1a73e8;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-    }
-    .risk-critical { 
-        background: linear-gradient(135deg, #ff416c, #ff4b2b);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .risk-high { 
-        background: linear-gradient(135deg, #ff9a00, #ff5e00);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .risk-medium { 
-        background: linear-gradient(135deg, #ffe000, #ffb347);
-        color: #333;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .risk-low { 
-        background: linear-gradient(135deg, #56ab2f, #a8e063);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-        display: inline-block;
-    }
-    .stButton>button {
-        background: linear-gradient(90deg, #1a73e8, #34a853);
-        color: white;
-        border: none;
-        padding: 0.5rem 2rem;
-        border-radius: 25px;
-        font-weight: bold;
-    }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-</style>
-""",
-    unsafe_allow_html=True,
-)
-
 # Header
-st.markdown(
-    '<h1 class="main-header">🛡️ Gemini Compliance Monitor</h1>', unsafe_allow_html=True
-)
+st.markdown("# 🛡️ Gemini Compliance Monitor", unsafe_allow_html=True)
 st.markdown("### AI-Powered Real-time Regulatory Compliance Dashboard")
 
 # Sidebar
@@ -686,9 +638,9 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(
         """
-    <div style='background: #f0f2f6; padding: 1rem; border-radius: 10px;'>
-    <small>Built with ❤️ for Hackathon Submission</small><br>
-    <small>Using Google Gemini AI • FastAPI • Streamlit</small>
+    <div style='background: rgba(30, 41, 59, 0.6); padding: 1rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);'>
+    <small style='color: #cbd5e1;'>Built with ❤️ for Hackathon Submission</small><br>
+    <small style='color: #cbd5e1;'>Using Google Gemini AI • FastAPI • Streamlit</small>
     </div>
     """,
         unsafe_allow_html=True,
