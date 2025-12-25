@@ -889,9 +889,9 @@ with tab4:
     st.subheader("Regulation Sources")
 
     sources = {
-        "GDPR": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679",
-        "CCPA": "https://leginfo.legislature.ca.gov/faces/codes_displayText.xhtml",
-        "AI_ACT": "https://artificialintelligenceact.eu/",
+        "GDPR": "https://gdpr-info.eu/",
+        "CCPA": "https://oag.ca.gov/privacy/ccpa",
+        "AI_ACT": "https://artificialintelligenceact.eu/the-act/",
     }
 
     reg_descriptions = {
@@ -901,7 +901,7 @@ with tab4:
             "project_scope": "We audit your technical data pipelines, storage locations, and consent banners."
         },
         "CCPA": {
-            "summary": "California's privacy act. Focuses on transparency and the right to opt-out of data sales.",
+            "summary": "California Consumer Privacy Act. Focuses on transparency and the right to opt-out of data sales.",
             "keys": ["Right to Know", "Right to Delete", "Do Not Sell/Share", "Equitable Service"],
             "project_scope": "We check your 'Do Not Sell' UI placement and data sharing disclosures."
         },
@@ -928,16 +928,12 @@ with tab4:
             st.write("**Resource Links:**")
             col_a, col_b = st.columns(2)
             with col_a:
-                st.link_button(f"🔗 Official Source", url, use_container_width=True)
+                st.link_button(f"🚀 Open {reg} Guide", url, use_container_width=True)
             with col_b:
-                alt_url = {
-                    "GDPR": "https://en.wikipedia.org/wiki/General_Data_Protection_Regulation",
-                    "CCPA": "https://en.wikipedia.org/wiki/California_Consumer_Privacy_Act",
-                    "AI_ACT": "https://en.wikipedia.org/wiki/Artificial_Intelligence_Act"
-                }.get(reg, "#")
-                st.link_button(f"📚 Wiki Summary", alt_url, use_container_width=True)
+                alt_url = f"https://en.wikipedia.org/wiki/{reg.replace('_', ' ')}"
+                st.link_button(f"📖 Wiki Summary", alt_url, use_container_width=True)
             
-            st.caption("ℹ️ Use 'Wiki Summary' if the Official Source is slow or unreachable.")
+            st.info("💡 **Tip:** If the link doesn't open, check if your browser blocked a popup.")
 
     st.subheader("Data Management")
 
