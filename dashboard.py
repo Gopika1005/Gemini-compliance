@@ -319,12 +319,10 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("**🔗 Useful Links**")
+    st.link_button("📖 Project Guide & README", "https://github.com/Gopika1005/Gemini-compliance#readme", use_container_width=True)
+    st.link_button("💻 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
     if api_url:
         st.link_button("🚀 API Documentation", f"{api_url}/docs", use_container_width=True)
-    else:
-        st.link_button("📖 Streamlit Docs", "https://docs.streamlit.io", use_container_width=True)
-    
-    st.link_button("💻 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
     st.link_button("📜 Official AI Act Text", "https://artificialintelligenceact.eu/", use_container_width=True)
 
     st.markdown("---")
@@ -892,10 +890,16 @@ with tab4:
         "AI_ACT": "https://artificialintelligenceact.eu/",
     }
 
-    cols = st.columns(len(sources))
-    for i, (reg, url) in enumerate(sources.items()):
-        with cols[i]:
-            st.link_button(f"🌐 Open {reg} Text", url, use_container_width=True)
+    reg_descriptions = {
+        "GDPR": "The EU's primary data protection rule. This project audits your data collection, storage, and processing practices against GDPR standards.",
+        "CCPA": "California's privacy act. We check for 'Do Not Sell' mechanisms and user data transparency requirements.",
+        "AI_ACT": "The new EU framework for AI. Our system assesses risk levels (Unacceptable, High, Limited, Minimal) for your AI models."
+    }
+
+    for reg, url in sources.items():
+        with st.expander(f"📌 {reg} Information"):
+            st.write(reg_descriptions.get(reg, "Regulatory framework for digital services and data privacy."))
+            st.link_button(f"Visit Official {reg} Website", url)
 
     st.subheader("Data Management")
 
