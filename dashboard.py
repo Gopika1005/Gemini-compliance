@@ -2,6 +2,7 @@
 Streamlit Dashboard for Gemini Compliance Monitor
 """
 
+import asyncio
 import json
 import os
 import sys
@@ -12,7 +13,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-import asyncio
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -20,13 +20,14 @@ load_dotenv()
 
 # Embedded mode imports
 try:
+    import google.generativeai as genai
+
+    from config.settings import settings
     from src.audit_system import SystemAuditor
     from src.compliance_monitor import ComplianceMonitor
     from src.fix_suggester import FixSuggester
-    from src.regulation_parser import RegulationParser
     from src.main import initialize_system
-    import google.generativeai as genai
-    from config.settings import settings
+    from src.regulation_parser import RegulationParser
 except ImportError:
     pass
 
@@ -42,7 +43,8 @@ st.set_page_config(
 )
 
 # Custom Trendy Styles - Sleek Dark Mode
-st.markdown("""
+st.markdown(
+    """
 <style>
     /* Dark Theme Background */
     .stApp {
@@ -128,7 +130,10 @@ st.markdown("""
         font-weight: 700 !important;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
+
 
 def get_demo_results(company_data, regulations):
     """Generate demo results for testing"""
@@ -241,6 +246,7 @@ def get_demo_results(company_data, regulations):
         "analysis_date": datetime.now().isoformat(),
     }
 
+
 # Custom CSS
 st.markdown(
     """
@@ -338,9 +344,9 @@ with st.sidebar:
     api_option = st.selectbox(
         "Backend Connection",
         ["Embedded (Streamlit Cloud)", "External API (Local/Remote)"],
-        index=0
+        index=0,
     )
-    
+
     if api_option == "External API (Local/Remote)":
         api_url = st.text_input("API URL", "http://localhost:8000")
     else:
@@ -358,20 +364,22 @@ with st.sidebar:
                     api_key = st.secrets["GEMINI_API_KEY"]
             except:
                 pass
-                
+
             if not api_key:
                 api_key = os.getenv("GEMINI_API_KEY")
-            
+
             if not api_key:
                 return None
-            
+
             genai.configure(api_key=api_key)
             model = genai.GenerativeModel("gemini-pro")
-            
+
             regulation_parser = RegulationParser(model)
             system_auditor = SystemAuditor(model)
             fix_suggester = FixSuggester(model)
-            monitor = ComplianceMonitor(regulation_parser, system_auditor, fix_suggester)
+            monitor = ComplianceMonitor(
+                regulation_parser, system_auditor, fix_suggester
+            )
             return monitor
         except Exception as e:
             st.error(f"Failed to initialize embedded system: {e}")
@@ -410,13 +418,27 @@ with st.sidebar:
     st.markdown("**📖 Project Support**")
     with st.expander("🚀 Quick Start Guide"):
         st.write("1. **Configure**: Set your API key in the Settings tab.")
-        st.write("2. **Analyze**: Go to 'Compliance Check', enter company data, and click Run.")
+        st.write(
+            "2. **Analyze**: Go to 'Compliance Check', enter company data, and click Run."
+        )
         st.write("3. **Fix**: View 'Suggested Fixes' to see how to remediate issues.")
         st.write("4. **Monitor**: Use the Dashboard tab for a high-level overview.")
-    
-    st.link_button("📂 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
-    st.link_button("📝 Report an Issue", "https://github.com/Gopika1005/Gemini-compliance/issues", use_container_width=True)
-    st.link_button("🔬 AI Act Explorer", "https://artificialintelligenceact.eu/", use_container_width=True)
+
+    st.link_button(
+        "📂 GitHub Repository",
+        "https://github.com/Gopika1005/Gemini-compliance",
+        use_container_width=True,
+    )
+    st.link_button(
+        "📝 Report an Issue",
+        "https://github.com/Gopika1005/Gemini-compliance/issues",
+        use_container_width=True,
+    )
+    st.link_button(
+        "🔬 AI Act Explorer",
+        "https://artificialintelligenceact.eu/",
+        use_container_width=True,
+    )
 
     st.markdown("---")
     st.markdown(
@@ -664,10 +686,14 @@ with tab2:
                     elif embedded_system:
                         # Embedded mode
                         results = asyncio.run(
-                            embedded_system.analyze_compliance(company_data, regulations)
+                            embedded_system.analyze_compliance(
+                                company_data, regulations
+                            )
                         )
                     else:
-                        st.warning("⚠️ GEMINI_API_KEY not found or system not initialized. Using demo mode.")
+                        st.warning(
+                            "⚠️ GEMINI_API_KEY not found or system not initialized. Using demo mode."
+                        )
                         results = get_demo_results(company_data, regulations)
 
                 else:
@@ -986,33 +1012,51 @@ with tab4:
     reg_descriptions = {
         "GDPR": {
             "summary": "The EU's primary data protection rule. It gives individuals control over their personal data.",
-            "keys": ["Consent (Art. 7)", "Right to Access (Art. 15)", "Data Minimization (Art. 5)", "6% Revenue Fines"],
-            "project_scope": "We audit your technical data pipelines, storage locations, and consent banners."
+            "keys": [
+                "Consent (Art. 7)",
+                "Right to Access (Art. 15)",
+                "Data Minimization (Art. 5)",
+                "6% Revenue Fines",
+            ],
+            "project_scope": "We audit your technical data pipelines, storage locations, and consent banners.",
         },
         "CCPA": {
             "summary": "California Consumer Privacy Act. Focuses on transparency and the right to opt-out of data sales.",
-            "keys": ["Right to Know", "Right to Delete", "Do Not Sell/Share", "Equitable Service"],
-            "project_scope": "We check your 'Do Not Sell' UI placement and data sharing disclosures."
+            "keys": [
+                "Right to Know",
+                "Right to Delete",
+                "Do Not Sell/Share",
+                "Equitable Service",
+            ],
+            "project_scope": "We check your 'Do Not Sell' UI placement and data sharing disclosures.",
         },
         "AI_ACT": {
             "summary": "The first comprehensive AI law in the world, focused on risk-based regulation.",
-            "keys": ["Prohibited AI", "High-Risk Systems", "Transparency Obligations", "Innovation Support"],
-            "project_scope": "We analyze your AI models for risk levels and transparency documentation."
-        }
+            "keys": [
+                "Prohibited AI",
+                "High-Risk Systems",
+                "Transparency Obligations",
+                "Innovation Support",
+            ],
+            "project_scope": "We analyze your AI models for risk levels and transparency documentation.",
+        },
     }
 
     for reg, url in sources.items():
         with st.expander(f"📌 {reg} Knowledge Base"):
-            data = reg_descriptions.get(reg, {"summary": "Regulatory framework.", "keys": [], "project_scope": ""})
+            data = reg_descriptions.get(
+                reg,
+                {"summary": "Regulatory framework.", "keys": [], "project_scope": ""},
+            )
             st.info(data["summary"])
-            
+
             if data["keys"]:
                 st.write("**Key Requirements:**")
                 for key in data["keys"]:
                     st.write(f"- {key}")
-            
+
             st.write(f"**How we help:** {data['project_scope']}")
-            
+
             # Alternative Links
             st.write("**Resource Links:**")
             col_a, col_b = st.columns(2)
@@ -1021,8 +1065,10 @@ with tab4:
             with col_b:
                 alt_url = f"https://en.wikipedia.org/wiki/{reg.replace('_', ' ')}"
                 st.link_button(f"📖 Wiki Summary", alt_url, use_container_width=True)
-            
-            st.info("💡 **Tip:** If the link doesn't open, check if your browser blocked a popup.")
+
+            st.info(
+                "💡 **Tip:** If the link doesn't open, check if your browser blocked a popup."
+            )
 
     st.subheader("Data Management")
 
