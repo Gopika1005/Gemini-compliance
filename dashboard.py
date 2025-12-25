@@ -1393,6 +1393,8 @@ with tab_visual:
                     st.warning(
                         "Please configure your GEMINI_API_KEY in Settings to use Visual Audit."
                     )
+
+with tab_chat:
     st.header("🤖 AI Compliance Consultant")
     st.info(
         "Ask ReguBrain anything about regulations, audit results, or technical implementation."
