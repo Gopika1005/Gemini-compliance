@@ -55,77 +55,90 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Initialize Session State for War Room
+if "emergency_mode" not in st.session_state:
+    st.session_state.emergency_mode = False
+if "war_room_log" not in st.session_state:
+    st.session_state.war_room_log = []
+
 # Custom Trendy Styles - Sleek Dark Mode
 st.markdown(
-    """
+    f"""
 <style>
     /* Dark Theme Background */
-    .stApp {
-        background: radial-gradient(circle at 50% -20%, #0f172a, #020617);
+    .stApp {{
+        background: { "radial-gradient(circle at 50% -20%, #450a0a, #020617)" if st.session_state.emergency_mode else "radial-gradient(circle at 50% -20%, #0f172a, #020617)" };
         background-attachment: fixed;
         color: #f8fafc !important;
-    }
+        animation: { "emergency-pulse 4s infinite" if st.session_state.emergency_mode else "none" };
+    }}
+
+    @keyframes emergency-pulse {{
+        0% {{ background-color: #020617; }}
+        50% {{ background-color: #450a0a; }}
+        100% {{ background-color: #020617; }}
+    }}
 
     /* High Contrast Sidebar */
-    [data-testid="stSidebar"] {
+    [data-testid="stSidebar"] {{
         background-color: rgba(15, 23, 42, 0.95) !important;
         backdrop-filter: blur(15px);
         border-right: 1px solid rgba(255, 255, 255, 0.2);
-    }
+    }}
 
     /* Force Higher Contrast for ALL Markdown Text */
     [data-testid="stMarkdownContainer"], 
     [data-testid="stMarkdownContainer"] p, 
     [data-testid="stMarkdownContainer"] li,
     [data-testid="stMarkdownContainer"] span,
-    [data-testid="stMarkdownContainer"] div {
+    [data-testid="stMarkdownContainer"] div {{
         color: #ffffff !important;
         font-size: 1.05rem;
         font-weight: 400;
-    }
+    }}
 
     /* Labels and Headers */
-    .stMetric label, .stMetric [data-testid="stMetricValue"] {
+    .stMetric label, .stMetric [data-testid="stMetricValue"] {{
         color: #ffffff !important;
-    }
+    }}
 
-    label[data-testid="stWidgetLabel"] p {
+    label[data-testid="stWidgetLabel"] p {{
         color: #ffffff !important;
         font-weight: 600 !important;
-    }
+    }}
 
     /* Neon Blue Headers */
-    h1, h2, h3 {
+    h1, h2, h3 {{
         color: #38bdf8 !important;
         font-weight: 800 !important;
         text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
-    }
+    }}
 
     /* Glassmorphism Cards/Expanders */
     div[data-testid="stExpander"], 
     .compliance-card, 
-    .metric-card {
+    .metric-card {{
         background-color: rgba(30, 41, 59, 0.6) !important;
         border: 1px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
         padding: 1.5rem !important;
         margin-bottom: 1rem !important;
         color: white !important;
-    }
+    }}
 
-    .compliance-card h2, .metric-card h3 {
+    .compliance-card h2, .metric-card h3 {{
         color: #38bdf8 !important;
         margin-top: 0 !important;
-    }
+    }}
 
-    .streamlit-expanderHeader {
+    .streamlit-expanderHeader {{
         background-color: transparent !important;
         color: #38bdf8 !important;
         font-weight: 700 !important;
-    }
+    }}
 
     /* Link Buttons in Sidebar */
-    [data-testid="stSidebar"] a {
+    [data-testid="stSidebar"] a {{
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #38bdf8 !important;
         border: 1px solid rgba(56, 189, 248, 0.3) !important;
@@ -137,16 +150,16 @@ st.markdown(
         margin-bottom: 0.5rem !important;
         text-align: center !important;
         font-weight: 600 !important;
-    }
+    }}
 
-    [data-testid="stSidebar"] a:hover {
+    [data-testid="stSidebar"] a:hover {{
         border-color: #38bdf8 !important;
         box-shadow: 0 0 15px rgba(56, 189, 248, 0.4) !important;
         transform: translateY(-2px) !important;
-    }
+    }}
 
     /* Cyber-Polished Buttons */
-    .stButton>button {
+    .stButton>button {{
         border-radius: 12px;
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
@@ -160,17 +173,17 @@ st.markdown(
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         animation: pulse-glow 3s infinite;
-    }
+    }}
     
-    .stButton>button:hover {
+    .stButton>button:hover {{
         transform: translateY(-3px) scale(1.02);
         background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
         box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
         border-color: rgba(255, 255, 255, 0.8);
-    }
+    }}
 
     /* Reflective Shine Effect */
-    .stButton>button::after {
+    .stButton>button::after {{
         content: '';
         position: absolute;
         top: -50%;
@@ -180,27 +193,27 @@ st.markdown(
         background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
         transform: rotate(45deg);
         transition: 0.8s;
-    }
+    }}
 
-    .stButton>button:hover::after {
+    .stButton>button:hover::after {{
         left: 100%;
-    }
+    }}
 
-    @keyframes pulse-glow {
-        0% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
-        50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
-        100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
-    }
+    @keyframes pulse-glow {{
+        0% {{ box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }}
+        50% {{ box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }}
+        100% {{ box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }}
+    }}
 
     /* Tab Customization */
-    button[data-baseweb="tab"] {
+    button[data-baseweb="tab"] {{
         color: #cbd5e1 !important;
-    }
-    button[aria-selected="true"] {
+    }}
+    button[aria-selected="true"] {{
         color: #38bdf8 !important;
         border-bottom-color: #38bdf8 !important;
         font-weight: 700 !important;
-    }
+    }}
 </style>
 """,
     unsafe_allow_html=True,
@@ -647,14 +660,17 @@ with st.sidebar:
     )
 
 # Main Content
-tab_overview, tab_analysis, tab_chat, tab_analytics, tab_settings = st.tabs(
-    [
-        "📊 Overview",
-        "🔍 Compliance Analysis",
-        "🤖 AI Consultant",
-        "📈 Analytics",
-        "⚙️ Settings",
-    ]
+tab_overview, tab_analysis, tab_chat, tab_analytics, tab_warroom, tab_settings = (
+    st.tabs(
+        [
+            "📊 Overview",
+            "🔍 Compliance Analysis",
+            "🤖 AI Consultant",
+            "📈 Analytics",
+            "🚨 War Room",
+            "⚙️ Settings",
+        ]
+    )
 )
 
 # Shared Results State
@@ -1288,6 +1304,107 @@ with tab_analytics:
         )
         sunburst_fig = generate_compliance_sunburst(results)
         st.plotly_chart(sunburst_fig, use_container_width=True)
+
+with tab_warroom:
+    st.header("🚨 War Room: Incident Response")
+    st.markdown("### Emergency Simulation Center")
+    st.warning(
+        "This mode simulates a critical data breach to test system resilience and agent response."
+    )
+
+    if st.button("🚨 TRIGGER CRITICAL BREACH SIMULATION", use_container_width=True):
+        st.session_state.emergency_mode = True
+        st.session_state.war_room_log = []
+        st.rerun()
+
+    if st.session_state.emergency_mode:
+        st.markdown(
+            "<h1 style='color: #ef4444; text-align: center; animation: pulse 1s infinite;'>RED ALERT: CRITICAL LEAK DETECTED</h1>",
+            unsafe_allow_html=True,
+        )
+
+        col1, col2 = st.columns([1, 2])
+
+        with col1:
+            st.error("⚠️ DATA EXFILTRATION IN PROGRESS")
+            st.info(
+                "**Target:** User PII Database\n\n**Origin:** Unknown IP (Eastern Europe)"
+            )
+
+            if st.button("🛡️ SECURE SYSTEMS & STOP LEAK"):
+                st.session_state.emergency_mode = False
+                st.success("Containment Successful. Systems Secured.")
+                st.rerun()
+
+        with col2:
+            st.subheader("🤖 Agent Coordination Log")
+
+            # Simulated Agent Steps
+            if not st.session_state.war_room_log:
+                with st.spinner("Agents initiating response..."):
+                    # Step 1: Researcher
+                    st.session_state.war_room_log.append(
+                        "🔍 **Researcher Agent:** Identified potential violations: GDPR Article 33 (Breach Notification) and CCPA § 1798.150."
+                    )
+                    # Step 2: Auditor
+                    st.session_state.war_room_log.append(
+                        "⚖️ **Auditor Agent:** Breach depth assessed. 45,000 PII records exposed. Severity: **CRITICAL**."
+                    )
+                    # Step 3: Advisor
+                    st.session_state.war_room_log.append(
+                        "📋 **Advisor Agent:** Strategic Plan: 1. Segregate compromised DB. 2. Notify Regulators. 3. Regenerate all access tokens."
+                    )
+
+            for msg in st.session_state.war_room_log:
+                st.markdown(f"> {msg}")
+
+            # Breach Notification Generator
+            st.divider()
+            st.subheader("📄 Automated Regulatory Filing")
+
+            breach_details = {
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "severity": "Critical",
+                "affected_users": 45000,
+                "regulations": ["GDPR", "CCPA"],
+            }
+
+            if st.button("Generate Regulatory Breach Notice"):
+                # Use FPDF to generate a professional notice
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.set_font("helvetica", "B", 20)
+                pdf.set_text_color(200, 0, 0)
+                pdf.cell(0, 15, "OFFICIAL BREACH NOTIFICATION", ln=True, align="C")
+                pdf.set_text_color(0, 0, 0)
+                pdf.set_font("helvetica", "", 12)
+                pdf.ln(10)
+                pdf.write(
+                    5,
+                    f"To: Data Protection Authorities\nFrom: Gemini Compliance Monitor (Incident #SIM-{random.randint(1000,9999)})\nDate: {breach_details['date']}\n\n",
+                )
+                pdf.set_font("helvetica", "B", 14)
+                pdf.write(10, "1. Incident Description\n")
+                pdf.set_font("helvetica", "", 12)
+                pdf.write(
+                    5,
+                    "A critical data leak was detected involving unauthorized retrieval of PII records from the primary user database. Containment protocols were initiated via Multi-Agent ReguBrain systems.\n\n",
+                )
+                pdf.set_font("helvetica", "B", 14)
+                pdf.write(10, "2. Impact Assessment\n")
+                pdf.set_font("helvetica", "", 12)
+                pdf.write(
+                    5,
+                    f"- Severity: {breach_details['severity']}\n- Affected Records: {breach_details['affected_users']}\n- Primary Regulations: {', '.join(breach_details['regulations'])}\n\n",
+                )
+
+                pdf_output = pdf.output(dest="S")
+                st.download_button(
+                    label="📥 Download Official Breach Notice (PDF)",
+                    data=pdf_output,
+                    file_name="breach_notification_report.pdf",
+                    mime="application/pdf",
+                )
 
 with tab_settings:
     st.header("⚙️ Settings")
