@@ -13,6 +13,10 @@ import plotly.graph_objects as go
 import requests
 import streamlit as st
 import asyncio
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Embedded mode imports
 try:
@@ -147,7 +151,17 @@ with st.sidebar:
     def get_embedded_system():
         """Initialize the compliance system for embedded use"""
         try:
-            api_key = os.getenv("GEMINI_API_KEY")
+            # Try Streamlit Secrets first, then ENV
+            api_key = None
+            try:
+                if "GEMINI_API_KEY" in st.secrets:
+                    api_key = st.secrets["GEMINI_API_KEY"]
+            except:
+                pass
+                
+            if not api_key:
+                api_key = os.getenv("GEMINI_API_KEY")
+            
             if not api_key:
                 return None
             
@@ -172,17 +186,25 @@ with st.sidebar:
     st.header("📋 Quick Actions")
 
     if st.button("🔄 Check System Health", use_container_width=True):
-        try:
-            response = requests.get(f"{api_url}/health")
-            if response.status_code == 200:
-                st.success("✅ API is healthy!")
-            else:
-                st.error("❌ API is not responding")
-        except:
-            st.error("❌ Cannot connect to API")
+        if api_url:
+            try:
+                response = requests.get(f"{api_url}/health")
+                if response.status_code == 200:
+                    st.success("✅ API is healthy!")
+                else:
+                    st.error("❌ API is not responding")
+            except:
+                st.error("❌ Cannot connect to API")
+        elif embedded_system:
+            st.success("✅ Embedded System is Active!")
+            st.info("System is ready to analyze.")
+        else:
+            st.error("❌ System not initialized. Check API Key in Settings.")
 
     if st.button("📊 View Sample Report", use_container_width=True):
         st.session_state.demo_report = True
+        st.toast("📈 Sample report loaded! Please go to the 'Compliance Check' tab.")
+        st.success("Sample Report Ready!")
 
     st.markdown("---")
     st.markdown("**🔗 Useful Links**")
