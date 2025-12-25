@@ -55,7 +55,9 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Initialize Session State for War Room
+# Initialize Session State
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
 if "emergency_mode" not in st.session_state:
     st.session_state.emergency_mode = False
 if "war_room_log" not in st.session_state:
@@ -743,6 +745,49 @@ def get_demo_results(company_data, regulations):
         "regulations": regulations,
         "analysis_date": datetime.now().isoformat(),
     }
+
+
+# --- Authentication Layer ---
+if not st.session_state.authenticated:
+    st.markdown(
+        """
+        <div style='text-align: center; padding-top: 5rem;'>
+            <h1 style='font-size: 3rem; color: #38bdf8; margin-bottom: 0;'>🛡️ ReguBrain</h1>
+            <p style='color: #94a3b8; font-size: 1.2rem;'>Governance • Compliance • Intelligence</p>
+        </div>
+        <div style='display: flex; justify-content: center; align-items: center; margin-top: 2rem;'>
+            <div style='background: rgba(30, 41, 59, 0.7); padding: 3rem; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.3); backdrop-filter: blur(20px); width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);'>
+                <h2 style='text-align: center; color: white; margin-bottom: 2rem;'>Secure Access Gateway</h2>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    col_l, col_r = st.columns([1, 10])
+    with col_r:
+        user = st.text_input("Operator Identity", placeholder="Username")
+        pw = st.text_input(
+            "Security Clearance", type="password", placeholder="Password"
+        )
+
+        if st.button("🔓 AUTHORIZE ACCESS", use_container_width=True):
+            if user == "admin" and pw == "admin":
+                st.session_state.authenticated = True
+                st.success("Access Granted. Initializing ReguBrain...")
+                st.rerun()
+            else:
+                st.error("Access Denied. Invalid Credentials.")
+
+    st.markdown(
+        """
+            </div>
+        </div>
+        <div style='text-align: center; margin-top: 2rem; opacity: 0.5;'>
+            <small>System restricted to authorized personnel. All interactions are logged for compliance.</small>
+        </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    st.stop()
 
 
 # Header
