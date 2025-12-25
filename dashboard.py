@@ -41,6 +41,117 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+def get_demo_results(company_data, regulations):
+    """Generate demo results for testing"""
+    import random
+    from datetime import datetime
+
+    # Generate random violations
+    violations = []
+    violation_templates = [
+        {
+            "id": "gdpr_consent",
+            "regulation": "GDPR",
+            "requirement": "Explicit consent for data processing",
+            "severity": random.choice(["high", "medium"]),
+            "system_affected": "data_collection",
+            "description": "Consent mechanism lacks granular options",
+            "evidence": "Single checkbox for all processing purposes",
+        },
+        {
+            "id": "ccpa_optout",
+            "regulation": "CCPA",
+            "requirement": "Clear opt-out mechanism for data sale",
+            "severity": "medium",
+            "system_affected": "user_interface",
+            "description": "Do Not Sell link not prominently displayed",
+            "evidence": "Link buried in privacy policy",
+        },
+        {
+            "id": "aia_transparency",
+            "regulation": "AI_ACT",
+            "requirement": "Transparency for AI decisions",
+            "severity": random.choice(["medium", "low"]),
+            "system_affected": "ai_models",
+            "description": "AI model decisions not explained to users",
+            "evidence": "No explanation for recommendation outputs",
+        },
+    ]
+
+    # Select random violations
+    num_violations = random.randint(0, 3)
+    if num_violations > 0:
+        violations = random.sample(violation_templates, num_violations)
+
+    # Calculate score
+    base_score = 85 - (len(violations) * 10)
+    compliance_score = max(30, min(95, base_score + random.randint(-5, 5)))
+
+    # Risk level
+    if compliance_score >= 80:
+        risk_level = "low"
+    elif compliance_score >= 60:
+        risk_level = "medium"
+    elif compliance_score >= 40:
+        risk_level = "high"
+    else:
+        risk_level = "critical"
+
+    # Estimated fine
+    revenue = company_data.get("revenue", 1000000)
+    fine_percentage = {"critical": 0.06, "high": 0.04, "medium": 0.02, "low": 0.01}.get(
+        risk_level, 0.01
+    )
+
+    estimated_fine = revenue * fine_percentage if revenue else 0
+
+    # Fix suggestions
+    fixes = (
+        [
+            {
+                "violation_id": "gdpr_consent",
+                "title": "Implement Granular Consent Management",
+                "description": "Upgrade consent mechanism to allow users to choose specific processing purposes",
+                "steps": [
+                    "Audit current consent collection points",
+                    "Design purpose-specific consent options",
+                    "Update privacy policy with detailed purposes",
+                    "Implement and test new consent interface",
+                ],
+                "estimated_time_hours": 40,
+                "required_resources": ["frontend_dev", "legal_review"],
+                "priority": "high",
+                "cost_estimate_usd": 8000,
+                "compliance_impact": "Will resolve GDPR consent requirements",
+            }
+        ]
+        if violations
+        else []
+    )
+
+    return {
+        "compliance_score": compliance_score,
+        "violations": violations,
+        "suggested_fixes": fixes,
+        "audit_report": f"""
+        COMPLIANCE AUDIT REPORT - DEMO MODE
+        Company: {company_data.get('company_name')}
+        Date: {datetime.now().strftime('%Y-%m-%d')}
+        Score: {compliance_score}/100
+        Risk Level: {risk_level}
+        
+        Summary: Found {len(violations)} compliance issues. 
+        {'Immediate action required.' if violations else 'No critical issues found.'}
+        
+        Note: This is a demo report. For actual compliance assessment, 
+        ensure Gemini API is configured and run in production mode.
+        """,
+        "risk_level": risk_level,
+        "estimated_fine": round(estimated_fine, 2),
+        "regulations": regulations,
+        "analysis_date": datetime.now().isoformat(),
+    }
+
 # Custom CSS
 st.markdown(
     """
@@ -787,117 +898,6 @@ with tab4:
 
     if st.button("Export All Reports", use_container_width=True):
         st.info("Export initiated...")
-
-
-def get_demo_results(company_data, regulations):
-    """Generate demo results for testing"""
-    import random
-
-    # Generate random violations
-    violations = []
-    violation_templates = [
-        {
-            "id": "gdpr_consent",
-            "regulation": "GDPR",
-            "requirement": "Explicit consent for data processing",
-            "severity": random.choice(["high", "medium"]),
-            "system_affected": "data_collection",
-            "description": "Consent mechanism lacks granular options",
-            "evidence": "Single checkbox for all processing purposes",
-        },
-        {
-            "id": "ccpa_optout",
-            "regulation": "CCPA",
-            "requirement": "Clear opt-out mechanism for data sale",
-            "severity": "medium",
-            "system_affected": "user_interface",
-            "description": "Do Not Sell link not prominently displayed",
-            "evidence": "Link buried in privacy policy",
-        },
-        {
-            "id": "aia_transparency",
-            "regulation": "AI_ACT",
-            "requirement": "Transparency for AI decisions",
-            "severity": random.choice(["medium", "low"]),
-            "system_affected": "ai_models",
-            "description": "AI model decisions not explained to users",
-            "evidence": "No explanation for recommendation outputs",
-        },
-    ]
-
-    # Select random violations
-    num_violations = random.randint(0, 3)
-    if num_violations > 0:
-        violations = random.sample(violation_templates, num_violations)
-
-    # Calculate score
-    base_score = 85 - (len(violations) * 10)
-    compliance_score = max(30, min(95, base_score + random.randint(-5, 5)))
-
-    # Risk level
-    if compliance_score >= 80:
-        risk_level = "low"
-    elif compliance_score >= 60:
-        risk_level = "medium"
-    elif compliance_score >= 40:
-        risk_level = "high"
-    else:
-        risk_level = "critical"
-
-    # Estimated fine
-    revenue = company_data.get("revenue", 1000000)
-    fine_percentage = {"critical": 0.06, "high": 0.04, "medium": 0.02, "low": 0.01}.get(
-        risk_level, 0.01
-    )
-
-    estimated_fine = revenue * fine_percentage if revenue else 0
-
-    # Fix suggestions
-    fixes = (
-        [
-            {
-                "violation_id": "gdpr_consent",
-                "title": "Implement Granular Consent Management",
-                "description": "Upgrade consent mechanism to allow users to choose specific processing purposes",
-                "steps": [
-                    "Audit current consent collection points",
-                    "Design purpose-specific consent options",
-                    "Update privacy policy with detailed purposes",
-                    "Implement and test new consent interface",
-                ],
-                "estimated_time_hours": 40,
-                "required_resources": ["frontend_dev", "legal_review"],
-                "priority": "high",
-                "cost_estimate_usd": 8000,
-                "compliance_impact": "Will resolve GDPR consent requirements",
-            }
-        ]
-        if violations
-        else []
-    )
-
-    return {
-        "compliance_score": compliance_score,
-        "violations": violations,
-        "suggested_fixes": fixes,
-        "audit_report": f"""
-        COMPLIANCE AUDIT REPORT - DEMO MODE
-        Company: {company_data.get('company_name')}
-        Date: {datetime.now().strftime('%Y-%m-%d')}
-        Score: {compliance_score}/100
-        Risk Level: {risk_level}
-        
-        Summary: Found {len(violations)} compliance issues. 
-        {'Immediate action required.' if violations else 'No critical issues found.'}
-        
-        Note: This is a demo report. For actual compliance assessment, 
-        ensure Gemini API is configured and run in production mode.
-        """,
-        "risk_level": risk_level,
-        "estimated_fine": round(estimated_fine, 2),
-        "regulations": regulations,
-        "analysis_date": datetime.now().isoformat(),
-    }
 
 
 if __name__ == "__main__":
