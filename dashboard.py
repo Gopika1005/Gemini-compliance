@@ -91,10 +91,13 @@ st.markdown(
     [data-testid="stMarkdownContainer"] p, 
     [data-testid="stMarkdownContainer"] li,
     [data-testid="stMarkdownContainer"] span,
-    [data-testid="stMarkdownContainer"] div {{
+    [data-testid="stMarkdownContainer"] small,
+    [data-testid="stMarkdownContainer"] div,
+    [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p {{
         color: #ffffff !important;
         font-size: 1.05rem;
         font-weight: 400;
+        opacity: 1 !important;
     }}
 
     /* Labels and Headers */
@@ -107,11 +110,15 @@ st.markdown(
         font-weight: 600 !important;
     }}
 
-    /* Neon Blue Headers */
-    h1, h2, h3 {{
+    /* Neon Blue Headers - Force Visibility */
+    h1, h2, h3, h4, 
+    [data-testid="stSidebar"] h1, 
+    [data-testid="stSidebar"] h2, 
+    [data-testid="stSidebar"] h3 {{
         color: #38bdf8 !important;
         font-weight: 800 !important;
         text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+        opacity: 1 !important;
     }}
 
     /* Glassmorphism Cards/Expanders */
