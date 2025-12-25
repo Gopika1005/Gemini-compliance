@@ -41,6 +41,61 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Custom Trendy Styles
+st.markdown("""
+<style>
+    /* Mesh Gradient Background */
+    .stApp {
+        background: radial-gradient(at 0% 0%, rgba(26, 115, 232, 0.15) 0, transparent 50%),
+                    radial-gradient(at 50% 0%, rgba(52, 168, 83, 0.1) 0, transparent 50%),
+                    radial-gradient(at 100% 0%, rgba(251, 188, 5, 0.15) 0, transparent 50%),
+                    #ffffff;
+        background-attachment: fixed;
+    }
+
+    /* Glassmorphism for sidebar */
+    [data-testid="stSidebar"] {
+        background-color: rgba(255, 255, 255, 0.6) !important;
+        backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    /* Modern Card Styles */
+    div.stMarkdown div[data-testid="stMarkdownContainer"] p {
+        color: #3c4043;
+    }
+
+    /* Gradient Buttons */
+    .stButton>button {
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        color: white;
+    }
+
+    /* Title Styling */
+    h1, h2, h3 {
+        color: #1a73e8 !important;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Expander Glassmorphism */
+    .streamlit-expanderHeader {
+        background-color: rgba(255, 255, 255, 0.4) !important;
+        border-radius: 10px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 def get_demo_results(company_data, regulations):
     """Generate demo results for testing"""
     import random
