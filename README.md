@@ -13,14 +13,21 @@ A real-time AI-powered compliance monitoring system that:
 - Estimates potential fines and risk levels
 - Offers real-time monitoring dashboard
 
-### 🚀 Features
-- **Multi-Regulation Support**: GDPR, CCPA, DMA, AI Act, HIPAA, PIPEDA
-- **Real-time Monitoring**: Continuous compliance checking
-- **AI-Powered Analysis**: Uses Google Gemini AI for intelligent parsing
-- **Risk Assessment**: Calculates potential fines (up to 6% revenue)
-- **Actionable Fixes**: Step-by-step remediation guidance
-- **Beautiful Dashboard**: Streamlit-based visual interface
-- **REST API**: Full API for integration with existing systems
+### ⚙️ Core Components
+- **Regulation Parser**: Uses Gemini Pro to convert unstructured regulatory PDF/Text into searchable JSON schemas.
+- **System Auditor**: Cross-references company technical stacks against regulatory requirements to find gaps.
+- **Fix Suggester**: Generates step-by-step remediation plans, including estimated time and cost for developers.
+- **Compliance Monitor**: The central engine that orchestrates analysis and maintains compliance history.
+
+### 🏗️ Technical Architecture
+```mermaid
+graph TD
+    A[Streamlit Dashboard] --> B[Embedded Compliance Monitor]
+    A --> C[FastAPI Backend]
+    B & C --> D[Gemini Pro AI]
+    D --> E[(Regulation KB)]
+    B & C --> F[Audit Results]
+```
 
 ### 📦 Installation
 

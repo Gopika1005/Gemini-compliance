@@ -318,12 +318,16 @@ with st.sidebar:
         st.success("Sample Report Ready!")
 
     st.markdown("---")
-    st.markdown("**🔗 Useful Links**")
-    st.link_button("📖 Project Guide & README", "https://github.com/Gopika1005/Gemini-compliance#readme", use_container_width=True)
-    st.link_button("💻 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
-    if api_url:
-        st.link_button("🚀 API Documentation", f"{api_url}/docs", use_container_width=True)
-    st.link_button("📜 Official AI Act Text", "https://artificialintelligenceact.eu/", use_container_width=True)
+    st.markdown("**📖 Project Support**")
+    with st.expander("🚀 Quick Start Guide"):
+        st.write("1. **Configure**: Set your API key in the Settings tab.")
+        st.write("2. **Analyze**: Go to 'Compliance Check', enter company data, and click Run.")
+        st.write("3. **Fix**: View 'Suggested Fixes' to see how to remediate issues.")
+        st.write("4. **Monitor**: Use the Dashboard tab for a high-level overview.")
+    
+    st.link_button("📂 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
+    st.link_button("📝 Report an Issue", "https://github.com/Gopika1005/Gemini-compliance/issues", use_container_width=True)
+    st.link_button("🔬 AI Act Explorer", "https://artificialintelligenceact.eu/", use_container_width=True)
 
     st.markdown("---")
     st.markdown(
@@ -919,8 +923,21 @@ with tab4:
                     st.write(f"- {key}")
             
             st.write(f"**How we help:** {data['project_scope']}")
-            st.markdown(f"[Open Official {reg} Text]({url})")
-            st.caption("⚠️ If the link fails to load, the information above provides our internal summary.")
+            
+            # Alternative Links
+            st.write("**Resource Links:**")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.link_button(f"🔗 Official Source", url, use_container_width=True)
+            with col_b:
+                alt_url = {
+                    "GDPR": "https://en.wikipedia.org/wiki/General_Data_Protection_Regulation",
+                    "CCPA": "https://en.wikipedia.org/wiki/California_Consumer_Privacy_Act",
+                    "AI_ACT": "https://en.wikipedia.org/wiki/Artificial_Intelligence_Act"
+                }.get(reg, "#")
+                st.link_button(f"📚 Wiki Summary", alt_url, use_container_width=True)
+            
+            st.caption("ℹ️ Use 'Wiki Summary' if the Official Source is slow or unreachable.")
 
     st.subheader("Data Management")
 
