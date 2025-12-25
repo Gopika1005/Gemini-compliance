@@ -319,9 +319,12 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("**🔗 Useful Links**")
-    st.markdown("[API Documentation](%s/docs)" % api_url)
-    st.markdown("[GitHub Repository](#)")
-    st.markdown("[Regulation Sources](#)")
+    if api_url:
+        st.markdown(f"[API Documentation]({api_url}/docs)")
+    else:
+        st.markdown("[Streamlit Documentation](https://docs.streamlit.io)")
+    st.markdown("[GitHub Repository](https://github.com/Gopika1005/Gemini-compliance)")
+    st.markdown("[Official AI Act Text](https://artificialintelligenceact.eu/)")
 
     st.markdown("---")
     st.markdown(
@@ -889,7 +892,7 @@ with tab4:
     }
 
     for reg, url in sources.items():
-        st.text_input(f"{reg} Source URL", url, disabled=True)
+        st.markdown(f"- **{reg}**: [{url}]({url})")
 
     st.subheader("Data Management")
 
