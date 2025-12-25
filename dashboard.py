@@ -41,57 +41,91 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom Trendy Styles
+# Custom Trendy Styles - Sleek Dark Mode
 st.markdown("""
 <style>
-    /* Mesh Gradient Background */
+    /* Dark Theme Background */
     .stApp {
-        background: radial-gradient(at 0% 0%, rgba(26, 115, 232, 0.15) 0, transparent 50%),
-                    radial-gradient(at 50% 0%, rgba(52, 168, 83, 0.1) 0, transparent 50%),
-                    radial-gradient(at 100% 0%, rgba(251, 188, 5, 0.15) 0, transparent 50%),
-                    #ffffff;
+        background: radial-gradient(circle at 50% -20%, #0f172a, #020617);
         background-attachment: fixed;
+        color: #f8fafc !important;
     }
 
-    /* Glassmorphism for sidebar */
+    /* High Contrast Sidebar */
     [data-testid="stSidebar"] {
-        background-color: rgba(255, 255, 255, 0.6) !important;
-        backdrop-filter: blur(10px);
-        border-right: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: rgba(15, 23, 42, 0.95) !important;
+        backdrop-filter: blur(15px);
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Modern Card Styles */
-    div.stMarkdown div[data-testid="stMarkdownContainer"] p {
-        color: #3c4043;
+    /* Force Higher Contrast for ALL Markdown Text */
+    [data-testid="stMarkdownContainer"], 
+    [data-testid="stMarkdownContainer"] p, 
+    [data-testid="stMarkdownContainer"] li,
+    [data-testid="stMarkdownContainer"] span,
+    [data-testid="stMarkdownContainer"] div {
+        color: #ffffff !important;
+        font-size: 1.05rem;
+        font-weight: 400;
     }
 
-    /* Gradient Buttons */
+    /* Labels and Headers */
+    .stMetric label, .stMetric [data-testid="stMetricValue"] {
+        color: #ffffff !important;
+    }
+
+    label[data-testid="stWidgetLabel"] p {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+
+    /* Neon Blue Headers */
+    h1, h2, h3 {
+        color: #38bdf8 !important;
+        font-weight: 800 !important;
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Glassmorphism Cards/Expanders */
+    div[data-testid="stExpander"] {
+        background-color: rgba(30, 41, 59, 0.6) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 12px !important;
+    }
+
+    .streamlit-expanderHeader {
+        background-color: transparent !important;
+        color: #38bdf8 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Vibrant Gradient Buttons */
     .stButton>button {
-        border-radius: 8px;
-        border: none;
-        background: linear-gradient(90deg, #1a73e8 0%, #34a853 100%);
-        color: white;
-        font-weight: 600;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        color: white !important;
+        padding: 0.7rem 1.5rem;
+        font-weight: 700;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
     
     .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        color: white;
+        transform: scale(1.03);
+        box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+        border-color: #ffffff;
     }
 
-    /* Title Styling */
-    h1, h2, h3 {
-        color: #1a73e8 !important;
-        font-family: 'Inter', sans-serif;
+    /* Tab Customization */
+    button[data-baseweb="tab"] {
+        color: #cbd5e1 !important;
     }
-
-    /* Expander Glassmorphism */
-    .streamlit-expanderHeader {
-        background-color: rgba(255, 255, 255, 0.4) !important;
-        border-radius: 10px !important;
+    button[aria-selected="true"] {
+        color: #38bdf8 !important;
+        border-bottom-color: #38bdf8 !important;
+        font-weight: 700 !important;
     }
 </style>
 """, unsafe_allow_html=True)
