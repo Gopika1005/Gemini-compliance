@@ -705,6 +705,11 @@ tab_overview, tab_analysis, tab_chat, tab_analytics, tab_settings = st.tabs(
     ]
 )
 
+# Shared Results State
+if "results" not in st.session_state:
+    st.session_state.results = {}
+results = st.session_state.results
+
 with tab_overview:
     # Welcome Section
     col1, col2 = st.columns([2, 1])
@@ -948,6 +953,9 @@ with tab_analysis:
                 else:
                     # Demo mode
                     results = get_demo_results(company_data, regulations)
+
+                # Store in session state for other tabs
+                st.session_state.results = results
 
                 # Display Results
                 st.success("✅ Analysis Complete!")
