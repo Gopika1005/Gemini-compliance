@@ -61,6 +61,21 @@ This repository includes artifacts to run and deploy the project in development 
 - Disable `--reload` for production (edit `CMD` in `Dockerfile.api` or override at runtime).
 - Store secrets (e.g., `GEMINI_API_KEY`) in your provider's secrets manager or CI secrets.
 
+### Development
+- Install dev dependencies:
+  ```bash
+  make install-dev
+  ```
+- Run tests:
+  ```bash
+  make test
+  ```
+- Lint and format code:
+  ```bash
+  make lint
+  make format
+  ```
+
 ### CI/CD
 - A GitHub Actions workflow is provided at `.github/workflows/ci.yml` to run tests and build images on pushes and pull requests.
 - A dedicated **publish** workflow `.github/workflows/publish.yml` will build and push Docker images to GitHub Container Registry (GHCR) when you publish a release or push a `v*.*.*` tag.

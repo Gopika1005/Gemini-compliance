@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class FixSuggester:
-    def __init__(self, model=None):
+    def __init__(self, model: Any = None):
         self.model = model
 
     async def suggest_fixes(
@@ -110,7 +110,7 @@ class FixSuggester:
         company_size = company_data.get("user_count", 0)
 
         # Map violation types to fix templates
-        fix_templates = {
+        fix_templates: Dict[str, Dict[str, Any]] = {
             "data_minimization": {
                 "title": "Implement Data Minimization Policy",
                 "description": "Reduce collected data to only what's necessary",
@@ -192,12 +192,12 @@ class FixSuggester:
                     "description": template["description"],
                     "steps": template["steps"],
                     "estimated_time_hours": int(
-                        template["estimated_time_hours"] * time_multiplier
+                        float(template["estimated_time_hours"]) * time_multiplier
                     ),
                     "required_resources": template["required_resources"],
                     "priority": violation.get("severity", "medium"),
                     "cost_estimate_usd": int(
-                        template["cost_estimate_usd"] * cost_multiplier
+                        float(template["cost_estimate_usd"]) * cost_multiplier
                     ),
                     "compliance_impact": template["compliance_impact"],
                 }

@@ -1,3 +1,3 @@
 """Tests package for Gemini Compliance Monitor"""
 
-__all__ = []
+__all__: list[str] = []

@@ -14,6 +14,7 @@ import webbrowser
 from dotenv import load_dotenv
 
 load_dotenv()
+from config.settings import settings
 
 
 def print_header():
@@ -33,7 +34,7 @@ def print_header():
 
 def check_api_key():
     """Check if Gemini API key is set"""
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = settings.GEMINI_API_KEY
     if not api_key or api_key == "your_gemini_api_key_here":
         print("❌ ERROR: Gemini API key not configured!")
         print("\nPlease:")

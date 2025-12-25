@@ -7,13 +7,13 @@ logger = logging.getLogger(__name__)
 
 
 class RegulationParser:
-    def __init__(self, model=None):
+    def __init__(self, model: Any = None):
         self.model = model
-        self.regulation_cache = {}
+        self.regulation_cache: Dict[str, Any] = {}
 
     async def parse_regulation_from_text(
         self, regulation_text: str, regulation_name: str
-    ) -> Dict:
+    ) -> Dict[str, Any]:
         """Parse regulation text"""
         try:
             if self.model:
@@ -166,7 +166,7 @@ class RegulationParser:
             regulation_name, self._get_default_regulation(regulation_name)
         )
 
-    async def parse_regulations(self, regulation_names: List[str]) -> Dict:
+    async def parse_regulations(self, regulation_names: List[str]) -> Dict[str, Any]:
         """Parse multiple regulations"""
         regulations = {}
 

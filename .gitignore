@@ -4,6 +4,7 @@ venv/
 # Environment files
 .env
 .env.*
+!.env.example
 
 # Python cache
 __pycache__/
@@ -27,7 +28,6 @@ Thumbs.db
 
 # Docker
 **/.dockerignore
-**/Dockerfile*
 
 # Node
 node_modules/

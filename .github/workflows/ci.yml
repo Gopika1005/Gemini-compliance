@@ -10,6 +10,9 @@ jobs:
   test:
     name: Test & Lint
     runs-on: ubuntu-latest
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      API_KEY: ${{ secrets.API_KEY }}
     strategy:
       matrix:
         python-version: [3.10, 3.11, 3.12]

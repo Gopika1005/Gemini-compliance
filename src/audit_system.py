@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class SystemAuditor:
-    def __init__(self, model=None):
+    def __init__(self, model: Any = None):
         self.model = model
 
     async def audit_systems(self, company_data: Dict, regulations: Dict) -> Dict:

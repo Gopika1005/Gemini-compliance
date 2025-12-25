@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:
     from contextlib import asynccontextmanager
 
-    import google.generativeai as genai
+    import google.generativeai as genai  # type: ignore
     from dotenv import load_dotenv
     from fastapi import BackgroundTasks, FastAPI, HTTPException
     from fastapi.middleware.cors import CORSMiddleware
@@ -30,6 +30,8 @@ except ImportError as e:
 # Load environment variables
 load_dotenv()
 
+from config.settings import settings
+
 # Setup logging
 logger = setup_logging()
 
@@ -40,16 +42,19 @@ async def lifespan(app: FastAPI):
     """Initialize system components on startup and teardown on shutdown"""
     logger.info("🚀 Starting Gemini Compliance Monitor...")
 
-    # Check API key
-    api_key = os.getenv("GEMINI_API_KEY")
+    # Check API key using centralized settings
+    api_key = settings.GEMINI_API_KEY
     if not api_key or api_key == "your_gemini_api_key_here":
         logger.warning("⚠️  Gemini API key not configured. Using mock mode.")
-        app.state.mock_mode = True
+        app.state.mock_mode = True  # type: ignore
     else:
-        app.state.mock_mode = False
+        app.state.mock_mode = False  # type: ignore
         genai.configure(api_key=api_key)
 
-    app.state.system = await initialize_system()
+    # Store general API key in app state for other components
+    app.state.api_key = settings.API_KEY  # type: ignore
+
+    app.state.system = await initialize_system()  # type: ignore
     try:
         yield
     finally:
@@ -115,7 +120,7 @@ async def initialize_system():
     """Initialize the compliance system"""
     try:
         # Initialize Gemini model
-        model = genai.GenerativeModel("gemini-pro") if not app.state.mock_mode else None
+        model = genai.GenerativeModel("gemini-pro") if not app.state.mock_mode else None  # type: ignore
 
         # Initialize components
         regulation_parser = RegulationParser(model)
@@ -172,13 +177,13 @@ async def analyze_compliance(
     - **generate_report**: Whether to generate PDF report
     """
     try:
-        if not app.state.system:
+        if not app.state.system:  # type: ignore
             raise HTTPException(status_code=503, detail="System not initialized")
 
         company_dict = request.company_data.model_dump()
 
         # Run compliance analysis
-        result = await app.state.system.analyze_compliance(
+        result = await app.state.system.analyze_compliance(  # type: ignore
             company_dict, request.regulations
         )
 
@@ -261,7 +266,7 @@ async def quick_compliance_check(company_name: str, industry: str = "Technology"
     }
 
     request = ComplianceRequest(
-        company_data=CompanyData(**sample_data),
+        company_data=CompanyData(**sample_data),  # type: ignore
         regulations=["GDPR", "CCPA"],
         priority="low",
     )

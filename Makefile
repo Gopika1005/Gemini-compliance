@@ -19,3 +19,15 @@ docker-build:
 
 docker-compose-up:
 	docker compose up --build
+
+install-dev:
+	python -m pip install -r requirements.txt -r requirements-dev.txt
+
+lint:
+	black --check .
+	isort --check-only .
+	mypy src || true
+
+format:
+	black .
+	isort .

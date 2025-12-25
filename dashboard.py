@@ -12,6 +12,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import streamlit as st
+import asyncio
+
+# Embedded mode imports
+try:
+    from src.audit_system import SystemAuditor
+    from src.compliance_monitor import ComplianceMonitor
+    from src.fix_suggester import FixSuggester
+    from src.regulation_parser import RegulationParser
+    from src.main import initialize_system
+    import google.generativeai as genai
+    from config.settings import settings
+except ImportError:
+    pass
 
 # Add current directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -118,7 +131,39 @@ with st.sidebar:
     st.header("⚙️ Configuration")
 
     # API Configuration
-    api_url = st.text_input("API URL", "http://localhost:8000")
+    api_option = st.selectbox(
+        "Backend Connection",
+        ["Embedded (Streamlit Cloud)", "External API (Local/Remote)"],
+        index=0
+    )
+    
+    if api_option == "External API (Local/Remote)":
+        api_url = st.text_input("API URL", "http://localhost:8000")
+    else:
+        api_url = None
+
+    # Initialize embedded system if selected
+    @st.cache_resource
+    def get_embedded_system():
+        """Initialize the compliance system for embedded use"""
+        try:
+            api_key = os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                return None
+            
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel("gemini-pro")
+            
+            regulation_parser = RegulationParser(model)
+            system_auditor = SystemAuditor(model)
+            fix_suggester = FixSuggester(model)
+            monitor = ComplianceMonitor(regulation_parser, system_auditor, fix_suggester)
+            return monitor
+        except Exception as e:
+            st.error(f"Failed to initialize embedded system: {e}")
+            return None
+
+    embedded_system = get_embedded_system() if api_url is None else None
 
     # Demo Mode
     demo_mode = st.checkbox("Enable Demo Mode", value=True)
@@ -370,23 +415,33 @@ with tab2:
 
             try:
                 if not demo_mode:
-                    # Real API call
-                    response = requests.post(
-                        f"{api_url}/analyze-compliance",
-                        json={
-                            "company_data": company_data,
-                            "regulations": regulations,
-                            "priority": priority.lower(),
-                            "generate_report": generate_report,
-                        },
-                        timeout=30,
-                    )
+                    if api_url:
+                        # Real API call
+                        response = requests.post(
+                            f"{api_url}/analyze-compliance",
+                            json={
+                                "company_data": company_data,
+                                "regulations": regulations,
+                                "priority": priority.lower(),
+                                "generate_report": generate_report,
+                            },
+                            timeout=30,
+                        )
 
-                    if response.status_code == 200:
-                        results = response.json()
+                        if response.status_code == 200:
+                            results = response.json()
+                        else:
+                            st.error(f"API Error: {response.status_code}")
+                            results = get_demo_results(company_data, regulations)
+                    elif embedded_system:
+                        # Embedded mode
+                        results = asyncio.run(
+                            embedded_system.analyze_compliance(company_data, regulations)
+                        )
                     else:
-                        st.error(f"API Error: {response.status_code}")
+                        st.warning("⚠️ GEMINI_API_KEY not found or system not initialized. Using demo mode.")
                         results = get_demo_results(company_data, regulations)
+
                 else:
                     # Demo mode
                     results = get_demo_results(company_data, regulations)
