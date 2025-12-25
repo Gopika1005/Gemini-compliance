@@ -891,15 +891,36 @@ with tab4:
     }
 
     reg_descriptions = {
-        "GDPR": "The EU's primary data protection rule. This project audits your data collection, storage, and processing practices against GDPR standards.",
-        "CCPA": "California's privacy act. We check for 'Do Not Sell' mechanisms and user data transparency requirements.",
-        "AI_ACT": "The new EU framework for AI. Our system assesses risk levels (Unacceptable, High, Limited, Minimal) for your AI models."
+        "GDPR": {
+            "summary": "The EU's primary data protection rule. It gives individuals control over their personal data.",
+            "keys": ["Consent (Art. 7)", "Right to Access (Art. 15)", "Data Minimization (Art. 5)", "6% Revenue Fines"],
+            "project_scope": "We audit your technical data pipelines, storage locations, and consent banners."
+        },
+        "CCPA": {
+            "summary": "California's privacy act. Focuses on transparency and the right to opt-out of data sales.",
+            "keys": ["Right to Know", "Right to Delete", "Do Not Sell/Share", "Equitable Service"],
+            "project_scope": "We check your 'Do Not Sell' UI placement and data sharing disclosures."
+        },
+        "AI_ACT": {
+            "summary": "The first comprehensive AI law in the world, focused on risk-based regulation.",
+            "keys": ["Prohibited AI", "High-Risk Systems", "Transparency Obligations", "Innovation Support"],
+            "project_scope": "We analyze your AI models for risk levels and transparency documentation."
+        }
     }
 
     for reg, url in sources.items():
-        with st.expander(f"📌 {reg} Information"):
-            st.write(reg_descriptions.get(reg, "Regulatory framework for digital services and data privacy."))
-            st.link_button(f"Visit Official {reg} Website", url)
+        with st.expander(f"📌 {reg} Knowledge Base"):
+            data = reg_descriptions.get(reg, {"summary": "Regulatory framework.", "keys": [], "project_scope": ""})
+            st.info(data["summary"])
+            
+            if data["keys"]:
+                st.write("**Key Requirements:**")
+                for key in data["keys"]:
+                    st.write(f"- {key}")
+            
+            st.write(f"**How we help:** {data['project_scope']}")
+            st.markdown(f"[Open Official {reg} Text]({url})")
+            st.caption("⚠️ If the link fails to load, the information above provides our internal summary.")
 
     st.subheader("Data Management")
 
