@@ -275,6 +275,85 @@ def generate_cyber_scan():
     return fig
 
 
+def generate_risk_constellation(simulation_results=None):
+    """Generate a 3D Risk Constellation of jurisdictional conflicts"""
+    import numpy as np
+    import plotly.graph_objects as go
+
+    # Jurisdictions as nodes
+    jurisdictions = [
+        "GDPR (EU)",
+        "CCPA (USA)",
+        "DMA (EU)",
+        "AI Act (EU)",
+        "UK-GDPR",
+        "China-PIPL",
+    ]
+    n = len(jurisdictions)
+
+    # Random or calculated positions
+    theta = np.linspace(0, 2 * np.pi, n, endpoint=False)
+    x = np.cos(theta)
+    y = np.sin(theta)
+    z = np.random.uniform(-1, 1, n)
+
+    # Risk scores (normalized)
+    risk_scores = [np.random.uniform(20, 90) for _ in range(n)]
+    colors = [
+        "#ef4444" if r > 70 else "#facc15" if r > 40 else "#22c55e" for r in risk_scores
+    ]
+
+    fig = go.Figure()
+
+    # Add lines between nodes (Conflicts)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if np.random.rand() > 0.5:
+                fig.add_trace(
+                    go.Scatter3d(
+                        x=[x[i], x[j]],
+                        y=[y[i], y[j]],
+                        z=[z[i], z[j]],
+                        mode="lines",
+                        line=dict(color="rgba(255,255,255,0.1)", width=1),
+                        hoverinfo="none",
+                    )
+                )
+
+    # Add nodes
+    fig.add_trace(
+        go.Scatter3d(
+            x=x,
+            y=y,
+            z=z,
+            mode="markers+text",
+            marker=dict(
+                size=12, color=colors, opacity=0.8, line=dict(color="white", width=1)
+            ),
+            text=jurisdictions,
+            textposition="top center",
+            hoverinfo="text",
+            hovertext=[
+                f"{j}: {r:.1f}% Risk" for j, r in zip(jurisdictions, risk_scores)
+            ],
+        )
+    )
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(showbackground=False, visible=False),
+            yaxis=dict(showbackground=False, visible=False),
+            zaxis=dict(showbackground=False, visible=False),
+        ),
+        margin=dict(l=0, r=0, b=0, t=0),
+        height=400,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+    )
+    return fig
+
+
 def generate_brain_graph(results):
     """Generate a 3D Knowledge Graph of ReguBrain's logic"""
     import plotly.graph_objects as go
@@ -805,6 +884,7 @@ with st.sidebar:
     tab_visual,
     tab_chat,
     tab_analytics,
+    tab_oracle,
     tab_warroom,
     tab_settings,
 ) = st.tabs(
@@ -814,6 +894,7 @@ with st.sidebar:
         "📸 Visual UI Audit",
         "🤖 AI Consultant",
         "📈 Analytics",
+        "🔮 Oracle",
         "🚨 War Room",
         "⚙️ Settings",
     ]
@@ -1438,6 +1519,84 @@ with tab_chat:
                 st.warning(
                     "Please configure your GEMINI_API_KEY in the Settings tab to use the AI Consultant."
                 )
+
+with tab_oracle:
+    st.header("🔮 The Oracle: Policy Simulator")
+    st.markdown("### Model Future Decisions & Regulatory Impact")
+    st.info(
+        "Simulate business changes before execution to see their legal impact across all jurisdictions."
+    )
+
+    col1, col2 = st.columns([1, 2])
+
+    with col1:
+        st.subheader("🛠️ Simulation Parameters")
+        sim_choice = st.selectbox(
+            "Select Scenario",
+            [
+                "Deploying Generative AI for Customer Support",
+                "Selling User Data to Third-Party Advertisers",
+                "Implementing Biometric Authentication",
+                "Automating Hiring via ML Algorithms",
+                "Expanding Services to China (PIPL Compliance)",
+                "Custom Scenario...",
+            ],
+        )
+
+        if sim_choice == "Custom Scenario...":
+            custom_sim = st.text_area(
+                "Describe your future policy change",
+                "e.g., We plan to track user location 24/7 for improved delivery speed.",
+            )
+
+        jurisdiction = st.multiselect(
+            "Target Jurisdictions",
+            [
+                "EU",
+                "USA (California)",
+                "USA (Federal)",
+                "UK",
+                "China",
+                "India",
+                "Brazil",
+            ],
+            default=["EU", "USA (California)"],
+        )
+
+        sim_btn = st.button("🚀 Run Oracle Simulation", use_container_width=True)
+
+    with col2:
+        if sim_btn:
+            with st.spinner("Oracle is scrying the regulatory future..."):
+                st.markdown("#### 🧊 Global Risk Constellation")
+                st.plotly_chart(generate_risk_constellation(), use_container_width=True)
+
+                # Mock analysis for demo
+                st.subheader("🕵️ Oracle's Verdict")
+                col01, col02, col03 = st.columns(3)
+                col01.metric("Likelihood of Fine", "High", "Critical Risk")
+                col02.metric("Legal Resistance", "8.2/10", "Strong")
+                col03.metric("Ethics Score", "42/100", "-15%")
+
+                st.markdown(
+                    f"""
+                > [!WARNING]
+                > **Conflict Detected**: Your proposed policy for *{sim_choice}* directly violates **Article 22 of GDPR** (Automated decision-making) and fails transparency tests under the **EU AI Act**.
+                
+                **Strategic Advice:** 
+                Implement a 'Human-in-the-loop' bypass and update your Data Processing Agreement (DPA) before going live.
+                """
+                )
+        else:
+            st.markdown(
+                """
+            <div style='text-align: center; padding: 5rem; border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px;'>
+                <h1 style='font-size: 4rem; opacity: 0.2;'>🔮</h1>
+                <p style='opacity: 0.5;'>Configure simulation parameters on the left to see your future risk constellation.</p>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
 
 with tab_analytics:
     st.header("📈 Analytics & Trends")
