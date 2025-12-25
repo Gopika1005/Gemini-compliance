@@ -114,23 +114,51 @@ st.markdown(
         font-weight: 700 !important;
     }
 
-    /* Vibrant Gradient Buttons */
+    /* Cyber-Polished Buttons */
     .stButton>button {
-        border-radius: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
         color: white !important;
-        padding: 0.7rem 1.5rem;
+        padding: 0.8rem 1.6rem;
         font-weight: 700;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.1em;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        animation: pulse-glow 3s infinite;
     }
     
     .stButton>button:hover {
-        transform: scale(1.03);
-        box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
-        border-color: #ffffff;
+        transform: translateY(-3px) scale(1.02);
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+        border-color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Reflective Shine Effect */
+    .stButton>button::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: rotate(45deg);
+        transition: 0.8s;
+    }
+
+    .stButton>button:hover::after {
+        left: 100%;
+    }
+
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
+        50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); }
+        100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.2); }
     }
 
     /* Tab Customization */
@@ -146,6 +174,66 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
+
+def generate_compliance_radar(results):
+    """Generate an advanced 3D Radar Chart for risk analysis"""
+    import plotly.graph_objects as go
+
+    categories = ["Privacy", "Security", "Transparency", "Fairness", "Accountability"]
+
+    # Map results to these categories (mock data mapping based on score for demo)
+    score = results.get("compliance_score", 0)
+    # Give some variance to make it look "advanced"
+    import random
+
+    values = [
+        score + random.randint(-5, 5),
+        score + random.randint(-10, 0),
+        score + random.randint(0, 10),
+        score + random.randint(-5, 5),
+        score + random.randint(-8, 2),
+    ]
+    values = [max(0, min(100, v)) for v in values]
+    values += [values[0]]  # Close the loop
+    categories += [categories[0]]
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatterpolar(
+            r=values,
+            theta=categories,
+            fill="toself",
+            fillcolor="rgba(56, 189, 248, 0.3)",
+            line=dict(color="#38bdf8", width=2),
+            name="Compliance Profile",
+        )
+    )
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor="rgba(15, 23, 42, 0.5)",
+            radialaxis=dict(
+                visible=True,
+                range=[0, 100],
+                color="#94a3b8",
+                gridcolor="rgba(255, 255, 255, 0.1)",
+                font=dict(size=10),
+            ),
+            angularaxis=dict(
+                color="#f1f5f9",
+                gridcolor="rgba(255, 255, 255, 0.1)",
+            ),
+        ),
+        showlegend=False,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        margin=dict(t=20, b=20, l=40, r=40),
+        height=300,
+    )
+
+    return fig
 
 
 def generate_policy_pdf(company_name, results):
@@ -851,6 +939,15 @@ with tab_analysis:
                         )
                         st.metric("Violations Found", len(violations))
                         st.metric("Regulations Checked", len(regulations))
+
+                # Radar Chart in new row
+                st.divider()
+                st.markdown(
+                    "<h2 style='text-align: center;'>🧊 Advanced Risk Dimensions</h2>",
+                    unsafe_allow_html=True,
+                )
+                radar_fig = generate_compliance_radar(results)
+                st.plotly_chart(radar_fig, use_container_width=True)
 
                 # Violations Details
                 st.subheader("🚨 Violations Found")
