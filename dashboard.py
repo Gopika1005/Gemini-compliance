@@ -21,8 +21,10 @@ load_dotenv()
 # Embedded mode imports
 try:
     import google.generativeai as genai
+    import PyPDF2
+    from fpdf import FPDF
 
-    from config.settings import settings
+    from src.agents import MultiAgentSystem
     from src.audit_system import SystemAuditor
     from src.compliance_monitor import ComplianceMonitor
     from src.fix_suggester import FixSuggester
@@ -133,6 +135,40 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
+
+def generate_policy_pdf(company_name, results):
+    """Generate a simple compliance policy PDF"""
+    try:
+        from fpdf import FPDF
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("helvetica", "B", 16)
+        pdf.cell(0, 10, f"Compliance Policy: {company_name}", ln=True, align="C")
+        pdf.ln(10)
+
+        pdf.set_font("helvetica", "B", 12)
+        pdf.cell(
+            0, 10, f"Compliance Score: {results.get('compliance_score', 0)}%", ln=True
+        )
+        pdf.ln(5)
+
+        pdf.set_font("helvetica", "B", 14)
+        pdf.cell(0, 10, "Mandatory Fixes Required:", ln=True)
+        pdf.ln(5)
+
+        pdf.set_font("helvetica", size=11)
+        for fix in results.get("suggested_fixes", []):
+            pdf.set_font("helvetica", "B", 11)
+            pdf.cell(0, 10, f"- {fix.get('title')}", ln=True)
+            pdf.set_font("helvetica", size=10)
+            pdf.multi_cell(0, 10, f"{fix.get('description')}")
+            pdf.ln(2)
+
+        return pdf.output()
+    except Exception as e:
+        return f"Error generating PDF: {str(e)}".encode()
 
 
 def get_demo_results(company_data, regulations):
@@ -452,11 +488,17 @@ with st.sidebar:
     )
 
 # Main Content
-tab1, tab2, tab3, tab4 = st.tabs(
-    ["🏠 Dashboard", "🔍 Compliance Check", "📈 Analytics", "⚙️ Settings"]
+tab_overview, tab_analysis, tab_chat, tab_analytics, tab_settings = st.tabs(
+    [
+        "📊 Overview",
+        "🔍 Compliance Analysis",
+        "🤖 AI Consultant",
+        "📈 Analytics",
+        "⚙️ Settings",
+    ]
 )
 
-with tab1:
+with tab_overview:
     # Welcome Section
     col1, col2 = st.columns([2, 1])
 
@@ -568,7 +610,7 @@ with tab1:
 
     st.dataframe(deadlines, use_container_width=True, hide_index=True)
 
-with tab2:
+with tab_analysis:
     st.header("🔍 Compliance Analysis")
 
     # Analysis Form
@@ -892,9 +934,44 @@ with tab2:
                     height=300,
                 )
 
+                # Advanced Compliance Tools
+                st.divider()
+                st.subheader("🚀 Advanced Compliance Tools")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "📄 Generate Compliance Policy (PDF)", use_container_width=True
+                    ):
+                        policy_pdf = generate_policy_pdf(company_name, results)
+                        if b"Error" in policy_pdf[:50]:
+                            st.error(policy_pdf.decode())
+                        else:
+                            st.download_button(
+                                label="📥 Download Policy Document",
+                                data=policy_pdf,
+                                file_name=f"{company_name.replace(' ', '_')}_Compliance_Policy.pdf",
+                                mime="application/pdf",
+                                use_container_width=True,
+                            )
+                with col2:
+                    if st.button(
+                        "🤖 Discuss results with AI Consultant",
+                        use_container_width=True,
+                    ):
+                        st.session_state.messages.append(
+                            {
+                                "role": "user",
+                                "content": f"I just ran a compliance audit for {company_name} and got a score of {results.get('compliance_score') or 0}%. What are my most critical next steps?",
+                            }
+                        )
+                        st.info(
+                            "Head over to the '🤖 AI Consultant' tab to start the discussion!"
+                        )
+
                 # Export Options
+                st.subheader("📥 Export Audit Data")
                 st.download_button(
-                    label="📥 Download Full Report (JSON)",
+                    label="💾 Download Full Report (JSON)",
                     data=json.dumps(results, indent=2),
                     file_name=f"compliance_report_{company_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                     mime="application/json",
@@ -906,7 +983,45 @@ with tab2:
                 st.info("Running in demo mode...")
                 results = get_demo_results(company_data, regulations)
 
-with tab3:
+with tab_chat:
+    st.header("🤖 AI Compliance Consultant")
+    st.info(
+        "Ask ReguBrain anything about regulations, audit results, or technical implementation."
+    )
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Initialize Agent System
+    if api_key:
+        agent_system = MultiAgentSystem(api_key)
+    else:
+        agent_system = None
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if prompt := st.chat_input("What is the data retention limit under GDPR?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        with st.chat_message("assistant"):
+            if agent_system:
+                response = asyncio.run(
+                    agent_system.get_consultation(prompt, st.session_state.messages)
+                )
+                st.markdown(response)
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": response}
+                )
+            else:
+                st.warning(
+                    "Please configure your GEMINI_API_KEY in the Settings tab to use the AI Consultant."
+                )
+
+with tab_analytics:
     st.header("📈 Analytics & Trends")
 
     # Sample analytics data
@@ -974,8 +1089,31 @@ with tab3:
     )
     st.plotly_chart(fig, use_container_width=True)
 
-with tab4:
-    st.header("⚙️ System Settings")
+with tab_settings:
+    st.header("⚙️ Settings")
+
+    # Document Intelligence Section
+    st.subheader("📄 Document Intelligence")
+    uploaded_file = st.file_uploader("Upload Regulation PDF/Text", type=["pdf", "txt"])
+    if uploaded_file is not None:
+        if st.button("Process Document"):
+            with st.spinner("Analyzing document with Researcher Agent..."):
+                if uploaded_file.type == "application/pdf":
+                    import PyPDF2
+
+                    pdf_reader = PyPDF2.PdfReader(uploaded_file)
+                    text = ""
+                    for page in pdf_reader.pages:
+                        text += page.extract_text()
+                else:
+                    text = uploaded_file.read().decode()
+
+                if agent_system:
+                    doc_result = asyncio.run(agent_system.process_document(text))
+                    st.success("Document Analyzed!")
+                    st.json(doc_result)
+                else:
+                    st.error("AI System not initialized. Check API Key.")
 
     col1, col2 = st.columns(2)
 
