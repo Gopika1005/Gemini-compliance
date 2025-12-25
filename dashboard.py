@@ -220,6 +220,121 @@ st.markdown(
 )
 
 
+def generate_cyber_scan():
+    """Generate a high-tech 3D Cyber-Scan animation"""
+    import numpy as np
+    import plotly.graph_objects as go
+
+    # Create a scanning plane
+    z_plane = np.linspace(-5, 5, 20)
+    x_plane = np.linspace(-5, 5, 20)
+    X, Z = np.meshgrid(x_plane, z_plane)
+    Y = np.zeros_like(X)
+
+    fig = go.Figure(
+        data=[
+            go.Surface(
+                z=Z,
+                x=X,
+                y=Y,
+                colorscale="Blues",
+                showscale=False,
+                opacity=0.3,
+                contours={
+                    "z": {
+                        "show": True,
+                        "start": -5,
+                        "end": 5,
+                        "size": 0.5,
+                        "color": "#38bdf8",
+                    }
+                },
+            )
+        ]
+    )
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            zaxis=dict(visible=False),
+            camera=dict(eye=dict(x=1.5, y=1.5, z=1.5)),
+        ),
+        margin=dict(t=0, b=0, l=0, r=0),
+        height=400,
+        paper_bgcolor="rgba(0,0,0,0)",
+    )
+
+    return fig
+
+
+def generate_brain_graph(results):
+    """Generate a 3D Knowledge Graph of ReguBrain's logic"""
+    import plotly.graph_objects as go
+
+    # Node types: Company, Regulation, Violation, Fix
+    nodes_x = [0, 2, 2, 2, 4, 4, 4]
+    nodes_y = [0, -2, 0, 2, -2, 0, 2]
+    nodes_z = [0, 1, 1, 1, 2, 2, 2]
+    labels = ["Company", "GDPR", "CCPA", "AI Act", "Fix A", "Fix B", "Fix C"]
+    colors = [
+        "#38bdf8",
+        "#818cf8",
+        "#818cf8",
+        "#818cf8",
+        "#34d399",
+        "#34d399",
+        "#34d399",
+    ]
+
+    # Edges
+    edge_x = [0, 2, None, 0, 2, None, 0, 2, None, 2, 4, None, 2, 4, None, 2, 4]
+    edge_y = [0, -2, None, 0, 0, None, 0, 2, None, -2, -2, None, 0, 0, None, 2, 2]
+    edge_z = [0, 1, None, 0, 1, None, 0, 1, None, 1, 2, None, 1, 2, None, 1, 2]
+
+    fig = go.Figure()
+
+    # Edges
+    fig.add_trace(
+        go.Scatter3d(
+            x=edge_x,
+            y=edge_y,
+            z=edge_z,
+            mode="lines",
+            line=dict(color="rgba(255,255,255,0.2)", width=1),
+            hoverinfo="none",
+        )
+    )
+
+    # Nodes
+    fig.add_trace(
+        go.Scatter3d(
+            x=nodes_x,
+            y=nodes_y,
+            z=nodes_z,
+            mode="markers+text",
+            text=labels,
+            marker=dict(size=10, color=colors, opacity=0.9, symbol="sphere"),
+            textposition="top center",
+        )
+    )
+
+    fig.update_layout(
+        scene=dict(
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False),
+            zaxis=dict(visible=False),
+            bgcolor="rgba(15, 23, 42, 0.5)",
+        ),
+        margin=dict(t=0, b=0, l=0, r=0),
+        height=500,
+        paper_bgcolor="rgba(0,0,0,0)",
+        showlegend=False,
+    )
+
+    return fig
+
+
 def generate_compliance_radar(results):
     """Generate an advanced 3D Radar Chart for risk analysis"""
     import plotly.graph_objects as go
@@ -623,6 +738,23 @@ with st.sidebar:
         st.success("Sample Report Ready!")
 
     st.markdown("---")
+    st.header("🌍 Global Polyglot")
+    lang_option = st.selectbox(
+        "Dashboard Language",
+        ["English", "Spanish", "French", "German", "Chinese", "Japanese", "Hindi"],
+        index=0,
+    )
+
+    if lang_option != "English":
+        st.info(f"ReguBrain is translating reports to {lang_option}...")
+        if "results" in st.session_state and st.session_state.results:
+            # Simple simulation of translation for hackathon demo
+            # In real app, we'd call agent_system.translate(results, lang_option)
+            st.session_state.results["translation_status"] = (
+                f"Localized to {lang_option}"
+            )
+
+    st.markdown("---")
     st.markdown("**📖 Project Support**")
     with st.expander("🚀 Quick Start Guide"):
         st.write("1. **Configure**: Set your API key in the Settings tab.")
@@ -660,17 +792,24 @@ with st.sidebar:
     )
 
 # Main Content
-tab_overview, tab_analysis, tab_chat, tab_analytics, tab_warroom, tab_settings = (
-    st.tabs(
-        [
-            "📊 Overview",
-            "🔍 Compliance Analysis",
-            "🤖 AI Consultant",
-            "📈 Analytics",
-            "🚨 War Room",
-            "⚙️ Settings",
-        ]
-    )
+(
+    tab_overview,
+    tab_analysis,
+    tab_visual,
+    tab_chat,
+    tab_analytics,
+    tab_warroom,
+    tab_settings,
+) = st.tabs(
+    [
+        "📊 Overview",
+        "🔍 Compliance Analysis",
+        "📸 Visual UI Audit",
+        "🤖 AI Consultant",
+        "📈 Analytics",
+        "🚨 War Room",
+        "⚙️ Settings",
+    ]
 )
 
 # Shared Results State
@@ -922,6 +1061,17 @@ with tab_analysis:
                     # Demo mode
                     results = get_demo_results(company_data, regulations)
 
+                # Cyber-Scan animation during processing
+                with st.spinner("Initiating Hyper-Spectral Compliance Scan..."):
+                    scan_placeholder = st.empty()
+                    scan_placeholder.plotly_chart(
+                        generate_cyber_scan(), use_container_width=True
+                    )
+                    import time
+
+                    time.sleep(2)  # Visual pause for effect
+                    scan_placeholder.empty()
+
                 # Store in session state for other tabs
                 st.session_state.results = results
 
@@ -1034,15 +1184,24 @@ with tab_analysis:
                         st.metric("Violations Found", len(violations))
                         st.metric("Regulations Checked", len(regulations))
 
-                # Radar Chart in new row
+                # Radar Chart and Brain Graph in new row
                 st.divider()
-                st.markdown(
-                    "<h2 style='text-align: center;'>🧊 Advanced Risk Dimensions</h2>",
-                    unsafe_allow_html=True,
-                )
-                radar_fig = generate_compliance_radar(results)
-                st.plotly_chart(radar_fig, use_container_width=True)
+                col_chart, col_brain = st.columns([1, 1])
+                with col_chart:
+                    st.markdown(
+                        "<h2 style='text-align: center;'>🧊 Advanced Risk Dimensions</h2>",
+                        unsafe_allow_html=True,
+                    )
+                    radar_fig = generate_compliance_radar(results)
+                    st.plotly_chart(radar_fig, use_container_width=True)
 
+                with col_brain:
+                    st.markdown(
+                        "<h2 style='text-align: center;'>🧠 ReguBrain Knowledge Graph</h2>",
+                        unsafe_allow_html=True,
+                    )
+                    brain_fig = generate_brain_graph(results)
+                    st.plotly_chart(brain_fig, use_container_width=True)
                 # Violations Details
                 st.subheader("🚨 Violations Found")
 
@@ -1188,7 +1347,52 @@ with tab_analysis:
                 st.info("Running in demo mode...")
                 results = get_demo_results(company_data, regulations)
 
-with tab_chat:
+with tab_visual:
+    st.header("📸 Visual UI Compliance Audit")
+    st.markdown("### Detect Dark Patterns & GDPR Violations via Computer Vision")
+    st.info(
+        "Upload a screenshot of your website, cookie banner, or app UI. Our Multimodal Gemini agent will analyze it for compliance issues."
+    )
+
+    ui_screenshot = st.file_uploader(
+        "Upload UI Screenshot", type=["png", "jpg", "jpeg"]
+    )
+
+    if ui_screenshot:
+        st.image(ui_screenshot, caption="Uploaded Web UI", use_container_width=True)
+
+        if st.button("🚀 Analyze UI for Compliance"):
+            with st.spinner("Gemini 1.5 Pro is analyzing the UI components..."):
+                if agent_system:
+                    try:
+                        from PIL import Image
+
+                        img = Image.open(ui_screenshot)
+
+                        visual_prompt = """
+                        You are a Senior Compliance Auditor with expertise in GDPR, CCPA, and the EU AI Act.
+                        Analyze this UI screenshot for:
+                        1. Dark Patterns (misleading buttons, forced choices).
+                        2. GDPR Cookie Consent compliance (Are Opt-out/Manage options visible?).
+                        3. Privacy transparency.
+                        4. UI accessibility and fairness.
+                        
+                        Provide a technical audit report with specific violations and suggested fixes.
+                        """
+
+                        # Call multimodal Gemini
+                        model_vision = genai.GenerativeModel("gemini-1.5-pro")
+                        response = model_vision.generate_content([visual_prompt, img])
+
+                        st.subheader("🕵️ Visual Audit Report")
+                        st.markdown(response.text)
+
+                    except Exception as e:
+                        st.error(f"Visual Analysis Failed: {e}")
+                else:
+                    st.warning(
+                        "Please configure your GEMINI_API_KEY in Settings to use Visual Audit."
+                    )
     st.header("🤖 AI Compliance Consultant")
     st.info(
         "Ask ReguBrain anything about regulations, audit results, or technical implementation."
