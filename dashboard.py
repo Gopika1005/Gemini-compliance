@@ -320,11 +320,12 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("**🔗 Useful Links**")
     if api_url:
-        st.markdown(f"[API Documentation]({api_url}/docs)")
+        st.link_button("🚀 API Documentation", f"{api_url}/docs", use_container_width=True)
     else:
-        st.markdown("[Streamlit Documentation](https://docs.streamlit.io)")
-    st.markdown("[GitHub Repository](https://github.com/Gopika1005/Gemini-compliance)")
-    st.markdown("[Official AI Act Text](https://artificialintelligenceact.eu/)")
+        st.link_button("📖 Streamlit Docs", "https://docs.streamlit.io", use_container_width=True)
+    
+    st.link_button("💻 GitHub Repository", "https://github.com/Gopika1005/Gemini-compliance", use_container_width=True)
+    st.link_button("📜 Official AI Act Text", "https://artificialintelligenceact.eu/", use_container_width=True)
 
     st.markdown("---")
     st.markdown(
@@ -891,8 +892,10 @@ with tab4:
         "AI_ACT": "https://artificialintelligenceact.eu/",
     }
 
-    for reg, url in sources.items():
-        st.markdown(f"- **{reg}**: [{url}]({url})")
+    cols = st.columns(len(sources))
+    for i, (reg, url) in enumerate(sources.items()):
+        with cols[i]:
+            st.link_button(f"🌐 Open {reg} Text", url, use_container_width=True)
 
     st.subheader("Data Management")
 
