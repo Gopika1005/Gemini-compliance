@@ -236,6 +236,124 @@ def generate_compliance_radar(results):
     return fig
 
 
+def generate_compliance_sunburst(results):
+    """Generate a hierarchical Sunburst chart for regulatory deep-dive"""
+    import pandas as pd
+    import plotly.express as px
+
+    # Hierarchical data for the sunburst
+    data = {
+        "labels": [
+            "Regulations",
+            "GDPR",
+            "CCPA",
+            "AI Act",
+            "Privacy",
+            "Security",
+            "Governance",
+            "Critical",
+            "High",
+            "Medium",
+        ],
+        "parents": [
+            "",
+            "Regulations",
+            "Regulations",
+            "Regulations",
+            "GDPR",
+            "CCPA",
+            "AI Act",
+            "Privacy",
+            "Security",
+            "Governance",
+        ],
+        "values": [0, 40, 30, 30, 25, 20, 15, 10, 15, 20],
+    }
+
+    fig = px.sunburst(
+        data,
+        names="labels",
+        parents="parents",
+        values="values",
+        color="values",
+        color_continuous_scale="Blues",
+        title="Regulatory Hierarchy Deep-Dive",
+    )
+
+    fig.update_layout(
+        margin=dict(t=40, b=0, l=0, r=0),
+        height=400,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#ffffff"),
+    )
+
+    return fig
+
+
+def generate_prioritization_cube(results):
+    """Generate a 3D Fix-Prioritization Cube (Impact vs Effort vs Severity)"""
+    import pandas as pd
+    import plotly.graph_objects as go
+
+    fixes = results.get("suggested_fixes", [])
+    if not fixes:
+        return None
+
+    # Extraction for 3D mapping
+    df_data = []
+    severity_map = {"critical": 10, "high": 7, "medium": 4, "low": 2}
+
+    for f in fixes:
+        df_data.append(
+            {
+                "Title": f.get("title", "Fix"),
+                "Effort": f.get("estimated_time_hours", 0),
+                "Cost": f.get("cost_estimate_usd", 0),
+                "Severity": severity_map.get(f.get("priority", "medium").lower(), 4),
+            }
+        )
+
+    df = pd.DataFrame(df_data)
+
+    fig = go.Figure(
+        data=[
+            go.Scatter3d(
+                x=df["Effort"],
+                y=df["Cost"],
+                z=df["Severity"],
+                text=df["Title"],
+                mode="markers+text",
+                marker=dict(
+                    size=10,
+                    color=df["Severity"],
+                    colorscale="Viridis",
+                    opacity=0.8,
+                    colorbar=dict(title="Severity Level", thickness=15),
+                ),
+            )
+        ]
+    )
+
+    fig.update_layout(
+        scene=dict(
+            xaxis_title="Effort (Hours)",
+            yaxis_title="Cost ($)",
+            zaxis_title="Severity Score",
+            bgcolor="rgba(15, 23, 42, 0.5)",
+            xaxis=dict(gridcolor="rgba(255,255,255,0.1)"),
+            yaxis=dict(gridcolor="rgba(255,255,255,0.1)"),
+            zaxis=dict(gridcolor="rgba(255,255,255,0.1)"),
+        ),
+        margin=dict(t=0, b=0, l=0, r=0),
+        height=500,
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#ffffff"),
+    )
+
+    return fig
+
+
 def generate_policy_pdf(company_name, results):
     """Generate a simple compliance policy PDF"""
     try:
@@ -1024,6 +1142,19 @@ with tab_analysis:
                 else:
                     st.success("🎉 No violations found! Your systems appear compliant.")
 
+                # Strategic Remediation Planning (3D)
+                st.divider()
+                st.markdown(
+                    "<h2 style='text-align: center;'>🧊 Strategic Remediation Planning</h2>",
+                    unsafe_allow_html=True,
+                )
+                st.info(
+                    "Rotate the 3D Cube to find the 'Low Hanging Fruit' (Low effort, Low cost, High severity fixes)."
+                )
+                cube_fig = generate_prioritization_cube(results)
+                if cube_fig:
+                    st.plotly_chart(cube_fig, use_container_width=True)
+
                 # Audit Report
                 st.subheader("📋 Audit Report")
                 st.text_area(
@@ -1167,25 +1298,36 @@ with tab_analytics:
     # Industry comparison
     st.subheader("🏢 Industry Comparison")
 
-    industry_data = pd.DataFrame(
-        {
-            "Industry": ["Tech", "Finance", "Healthcare", "Retail", "Education"],
-            "Avg Score": [78, 82, 75, 70, 85],
-            "Violations": [12, 8, 15, 18, 6],
-        }
-    )
+    col_a, col_b = st.columns([1, 1])
+    with col_a:
+        industry_data = pd.DataFrame(
+            {
+                "Industry": ["Tech", "Finance", "Healthcare", "Retail", "Education"],
+                "Avg Score": [78, 82, 75, 70, 85],
+                "Violations": [12, 8, 15, 18, 6],
+            }
+        )
 
-    fig = px.scatter(
-        industry_data,
-        x="Avg Score",
-        y="Violations",
-        size="Violations",
-        color="Industry",
-        hover_name="Industry",
-        size_max=60,
-        title="Industry Performance",
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        fig = px.scatter(
+            industry_data,
+            x="Avg Score",
+            y="Violations",
+            size="Violations",
+            color="Industry",
+            hover_name="Industry",
+            size_max=60,
+            title="Industry Performance",
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col_b:
+        # Hierarchical Sunburst
+        st.markdown(
+            "<h3 style='text-align: center;'>Regulatory Intelligence</h3>",
+            unsafe_allow_html=True,
+        )
+        sunburst_fig = generate_compliance_sunburst(results)
+        st.plotly_chart(sunburst_fig, use_container_width=True)
 
 with tab_settings:
     st.header("⚙️ Settings")
