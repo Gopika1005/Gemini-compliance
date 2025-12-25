@@ -1,0 +1,56 @@
+2025-12-25 15:15:02,411 - src.compliance_monitor - INFO - Starting compliance analysis for TechCorp Inc
+2025-12-25 15:15:02,417 - src.compliance_monitor - INFO - Parsing 3 regulations...
+2025-12-25 15:15:02,425 - src.regulation_parser - WARNING - Could not load regulation from file: Expecting value: line 1 column 1 (char 0)
+2025-12-25 15:15:03,012 - src.regulation_parser - ERROR - Gemini parsing failed: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2025-12-25 15:15:03,019 - src.regulation_parser - WARNING - Could not load regulation from file: Expecting value: line 1 column 1 (char 0)
+2025-12-25 15:15:03,197 - src.regulation_parser - ERROR - Gemini parsing failed: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2025-12-25 15:15:03,197 - src.regulation_parser - WARNING - Could not load regulation from file: Expecting value: line 1 column 1 (char 0)
+2025-12-25 15:15:03,296 - src.regulation_parser - ERROR - Gemini parsing failed: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2025-12-25 15:15:03,303 - src.compliance_monitor - INFO - Auditing company systems...
+2025-12-25 15:15:03,445 - src.audit_system - ERROR - AI audit failed: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2025-12-25 15:15:03,632 - src.fix_suggester - ERROR - AI fix generation failed: 400 API key not valid. Please pass a valid API key. [reason: "API_KEY_INVALID"
+domain: "googleapis.com"
+metadata {
+  key: "service"
+  value: "generativelanguage.googleapis.com"
+}
+, locale: "en-US"
+message: "API key not valid. Please pass a valid API key."
+]
+2025-12-25 15:16:43,820 - src.compliance_monitor - INFO - Starting compliance analysis for TechCorp Inc
+2025-12-25 15:16:43,822 - src.compliance_monitor - INFO - Parsing 3 regulations...
+2025-12-25 15:16:43,824 - src.compliance_monitor - INFO - Auditing company systems...
+2025-12-25 15:16:43,829 - src.audit_system - ERROR - AI audit failed: Event loop is closed
+2025-12-25 15:16:43,831 - src.fix_suggester - ERROR - AI fix generation failed: Event loop is closed
